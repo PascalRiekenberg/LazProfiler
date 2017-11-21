@@ -1,0 +1,95 @@
+object LazProfilerForm: TLazProfilerForm
+  Left = 1353
+  Height = 727
+  Top = 148
+  Width = 546
+  ActiveControl = VST
+  Caption = 'Profiler'
+  ClientHeight = 727
+  ClientWidth = 546
+  Position = poScreenCenter
+  LCLVersion = '1.9.0.0'
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 727
+    Top = 0
+    Width = 546
+    ActivePage = TabSheet1
+    Align = alClient
+    TabIndex = 0
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'Result'
+      ClientHeight = 699
+      ClientWidth = 538
+      object VST: TVirtualStringTree
+        Left = 0
+        Height = 699
+        Top = 0
+        Width = 538
+        Align = alClient
+        BorderStyle = bsNone
+        DefaultText = 'Node'
+        Header.AutoSizeIndex = 0
+        Header.Columns = <        
+          item
+            CheckBox = True
+            MinWidth = 100
+            Position = 0
+            Text = 'Name'
+            Width = 437
+          end        
+          item
+            MinWidth = 80
+            Position = 1
+            Text = 'Object'
+            Width = 100
+          end        
+          item
+            MinWidth = 50
+            Position = 2
+            Text = 'Unit'
+            Width = 100
+          end        
+          item
+            Alignment = taRightJustify
+            DefaultSortDirection = sdDescending
+            MinWidth = 50
+            Position = 3
+            Text = 'Count'
+          end        
+          item
+            Alignment = taRightJustify
+            DefaultSortDirection = sdDescending
+            MinWidth = 50
+            Position = 4
+            Text = 'Net'
+          end        
+          item
+            Alignment = taRightJustify
+            DefaultSortDirection = sdDescending
+            MinWidth = 50
+            Position = 5
+            Text = 'Gross'
+          end>
+        Header.Options = [hoColumnResize, hoDblClickResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+        Header.SortColumn = 4
+        Header.SortDirection = sdDescending
+        NodeDataSize = 4
+        TabOrder = 0
+        TreeOptions.MiscOptions = [toAcceptOLEDrop, toCheckSupport, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+        TreeOptions.PaintOptions = [toHideFocusRect, toShowDropmark, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toFullRowSelect]
+        OnChecked = VSTChecked
+        OnCompareNodes = VSTCompareNodes
+        OnDblClick = VSTDblClick
+        OnGetText = VSTGetText
+        OnInitNode = VSTInitNode
+        OnResize = VSTResize
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Configuration'
+    end
+  end
+end

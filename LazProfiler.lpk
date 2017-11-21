@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="LazProfiler"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="Pascal Riekenberg"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Other>
+        <CustomOptions Value="$(IDEBuildOptions)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="LazProfiler is an IDE addon for profiling your programs with one click."/>
+    <Version Minor="1" Release="2"/>
+    <Files Count="5">
+      <Item1>
+        <Filename Value="LazProfilerAddon.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="LazProfilerAddon"/>
+      </Item1>
+      <Item2>
+        <Filename Value="LazProfilerCore.pas"/>
+        <UnitName Value="LazProfilerCore"/>
+      </Item2>
+      <Item3>
+        <Filename Value="LazProfilerRunTime.pas"/>
+        <UnitName Value="LazProfilerRunTime"/>
+      </Item3>
+      <Item4>
+        <Filename Value="LazProfilerWindow.pas"/>
+        <UnitName Value="LazProfilerWindow"/>
+      </Item4>
+      <Item5>
+        <Filename Value="runtime.lrs"/>
+        <Type Value="LRS"/>
+      </Item5>
+    </Files>
+    <RequiredPkgs Count="6">
+      <Item1>
+        <PackageName Value="virtualtreeview_package"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="CodeTools"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="IDEIntf"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="LCLBase"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="etpackage"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="FCL"/>
+      </Item6>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
