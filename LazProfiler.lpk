@@ -13,6 +13,9 @@
       </SearchPaths>
       <Other>
         <CustomOptions Value="$(IDEBuildOptions)"/>
+        <ExecuteBefore>
+          <Command Value="before_compile.cmd $(LazarusDir) $PkgDir(etpackage)epiktimer.pas"/>
+        </ExecuteBefore>
       </Other>
     </CompilerOptions>
     <Description Value="LazProfiler is an IDE addon for profiling your programs with one click."/>

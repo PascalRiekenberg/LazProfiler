@@ -114,8 +114,8 @@ begin
 
   itmRunnning.Insert(lIdx + 1, lItem);
 
-  RegisterIDEMenuCommand(itmViewMainWindows, 'itmViewMainWindowsProfiler','Profiler',@Addon.ShowProfilerWindow, nil);
-  RegisterIDEMenuCommand(itmRunnning, 'itmRunMenuProfilerCleanUp','Cleanup Profiler',@Addon.CleanUp, nil);
+  RegisterIDEMenuCommand(itmViewMainWindows, 'itmViewMainWindowsProfiler','Profiler Results',@Addon.ShowProfilerWindow, nil);
+  RegisterIDEMenuCommand(itmRunnning, 'itmRunMenuProfilerCleanUp','Cleanup Profiler and restore original files',@Addon.CleanUp, nil);
   LazarusIDE.AddHandlerOnProjectBuilding(@Addon.ProjectBuilding);
   LazarusIDE.AddHandlerOnProjectBuildingFinished(@Addon.ProjectBuildingFinished);
   LazarusIDE.AddHandlerOnRunFinished(@Addon.RunFinished); { needs trunk 56254 }
