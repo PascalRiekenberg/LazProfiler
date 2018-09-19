@@ -31,6 +31,7 @@ type
     fSourcesInstrumented: Boolean;
     fFileList: TStringList;
     fProjectDir: String;
+    fIncludePath: String;
     fTargetDir: String;
     fTargetName: String;
     fProcList,
@@ -114,8 +115,8 @@ begin
 
   itmRunnning.Insert(lIdx + 1, lItem);
 
-  RegisterIDEMenuCommand(itmViewMainWindows, 'itmViewMainWindowsProfiler','Profiler',@Addon.ShowProfilerWindow, nil);
-  RegisterIDEMenuCommand(itmRunnning, 'itmRunMenuProfilerCleanUp','Cleanup Profiler',@Addon.CleanUp, nil);
+  RegisterIDEMenuCommand(itmViewMainWindows, 'itmViewMainWindowsProfiler','Profiler Results',@Addon.ShowProfilerWindow, nil);
+  RegisterIDEMenuCommand(itmRunnning, 'itmRunMenuProfilerCleanUp','Cleanup Profiler and restore original files',@Addon.CleanUp, nil);
   LazarusIDE.AddHandlerOnProjectBuilding(@Addon.ProjectBuilding);
   LazarusIDE.AddHandlerOnProjectBuildingFinished(@Addon.ProjectBuildingFinished);
   LazarusIDE.AddHandlerOnRunFinished(@Addon.RunFinished); { needs trunk 56254 }
@@ -332,15 +333,15 @@ end;
 function TProfilerAddon.ParseSource(pFileName: String; pInstrument: Boolean
   ): Boolean;
 var
-  sl: TStringList;
+  sl, lIncludeDirs: TStringList;
   fr: TFileResolver;
   pas: TPascalScanner;
   token, lPart: TToken;
-  level, lProfilingChangeLevel: Integer;
+  level, lProfilingChangeLevel, i: Integer;
   lImpUsesPos, lIntUsesPos, lImpPos, lIntPos: TPoint;
   lBlockStack: TBlocList;
   lBlock, lTempBlock, lStartProc: TBlockEntry;
-  lName, lParents, lUpComment, lNameOfClass, lUnitName: String;
+  lName, lParents, lUpComment, lNameOfClass, lUnitName, lIncludePath: String;
   lProfiling: Boolean;
   lPos: SizeInt;
 
@@ -465,6 +466,17 @@ begin
   sl := TStringList.Create;
   try
     fr := TFileResolver.Create;
+    lIncludeDirs := TStringList.Create;
+    try
+      lIncludeDirs.Delimiter := ';';
+      lIncludePath := fIncludePath;
+      IDEMacros.SubstituteMacros(lIncludePath);
+      lIncludeDirs.DelimitedText := lIncludePath;
+      for i := 0 to lIncludeDirs.Count - 1 do
+        fr.AddIncludePath(lIncludeDirs[i]);
+    finally
+      lIncludeDirs.Free;
+    end;
     pas := TPascalScanner.Create(fr);
     pas.AddDefine('fpc', true);
     lBlockStack := TBlocList.Create(False);
@@ -777,6 +789,7 @@ begin
   fTargetDir := AppendPathDelim(ExtractFileDir(lTargetFileName));
   fTargetName := ExtractFileNameOnly(lTargetFileName);
   fProjectDir := AppendPathDelim(ExtractFileDir(AProject.ProjectInfoFile));
+  fIncludePath := AProject.LazCompilerOptions.IncludePath;
   fProfiling := False;
   AProject.Flags := AProject.Flags - [pfAlwaysBuild];
   LoadResult;

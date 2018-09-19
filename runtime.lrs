@@ -257,30 +257,30 @@ LazarusResources.Add('core','PAS',[
   +' LoadFromFile(fName+cSettingExtension, fProcList);'#13#10'  fRunning := fAu'
   +'toStart;'#13#10'end;'#13#10#13#10'destructor TLazProfiler.Destroy;'#13#10'v'
   +'ar'#13#10'  i: Integer;'#13#10'  lCurStackFrame: TLPStackFrame;'#13#10'begi'
-  +'n'#13#10'  for i := 0 to fThreads.Count - 1 do begin'#13#10'    lCurStackFr'
-  +'ame := fCurStackFrame[i];'#13#10'    lCurStackFrame.fTicksEnd := Ticks();'
-  +#13#10'    lCurStackFrame.fTicksExit := lCurStackFrame.fTicksEnd;'#13#10'   '
-  +' lCurStackFrame.Calc;'#13#10'    lCurStackFrame.Free;'#13#10'  end;'#13#10
-  +'  { calc percentages }'#13#10#13#10'  { free resources }'#13#10'  fThreads.'
-  +'Free;'#13#10'  SetLength(fCurStackFrame, 0);'#13#10'  fTimer.Free;'#13#10' '
-  +' if fTicks > 0 then'#13#10'    fProcList.Convert(fTicks)'#13#10'  else'#13
-  +#10'    DebugLn(''***** LazProfiler: fTicks=''+IntToStr(fTicks));'#13#10'  i'
-  +'f fLoaded then'#13#10'    SaveToFile(fName+cSettingExtension, fProcList);'
-  +#13#10'  fProcList.Free;'#13#10'  DoneCriticalSection(fLock);'#13#10'  inher'
-  +'ited Destroy;'#13#10'end;'#13#10#13#10'{ TLPProc }'#13#10#13#10'procedure T'
-  +'LPProc.Init;'#13#10'begin'#13#10'  fCount := 0;'#13#10'  fNet := 0;'#13#10
-  +'  fGross := 0;'#13#10'end;'#13#10#13#10'constructor TLPProc.Create(pName, p'
-  ,'NameOfProc, pUnitName, pFileName: String; pRow: Integer'#13#10'  );'#13#10
-  +'begin'#13#10'  fName := pName;'#13#10'  fNameOfClass := pNameOfProc;'#13#10
-  +'  fUnitName := pUnitName;'#13#10'  fFileName := pFileName;'#13#10'  fRow :='
-  +' pRow;'#13#10'  fInstrument := True;'#13#10'  Init;'#13#10'end;'#13#10#13#10
-  +'destructor TLPProc.Destroy;'#13#10'begin'#13#10'  fCalls.Free;'#13#10'  fCa'
-  +'lledBy.Free;'#13#10'  inherited Destroy;'#13#10'end;'#13#10#13#10'procedure'
-  +' TLPProc.Calls(pProc: TLPProc);'#13#10'begin'#13#10'  if not Assigned(fCall'
-  +'s) then'#13#10'    fCalls := TLPProcList.Create(False);'#13#10'end;'#13#10
-  +#13#10'procedure TLPProc.CalledBy(pProc: TLPProc);'#13#10'begin'#13#10'  if '
-  +'not Assigned(fCalledBy) then'#13#10'    fCalledBy := TLPProcList.Create(Fal'
-  +'se);'#13#10'end;'#13#10#13#10'end.'#13#10#13#10
+  +'n'#13#10'  fMasterProc.Free;'#13#10'  for i := 0 to fThreads.Count - 1 do b'
+  +'egin'#13#10'    lCurStackFrame := fCurStackFrame[i];'#13#10'    lCurStackFr'
+  +'ame.fTicksEnd := Ticks();'#13#10'    lCurStackFrame.fTicksExit := lCurStack'
+  +'Frame.fTicksEnd;'#13#10'    lCurStackFrame.Calc;'#13#10'    lCurStackFrame.'
+  +'Free;'#13#10'  end;'#13#10'  { calc percentages }'#13#10#13#10'  { free res'
+  +'ources }'#13#10'  fThreads.Free;'#13#10'  SetLength(fCurStackFrame, 0);'#13
+  +#10'  fTimer.Free;'#13#10'  if fTicks > 0 then'#13#10'    fProcList.Convert('
+  +'fTicks)'#13#10'  else'#13#10'    DebugLn(''***** LazProfiler: fTicks=''+Int'
+  +'ToStr(fTicks));'#13#10'  if fLoaded then'#13#10'    SaveToFile(fName+cSetti'
+  +'ngExtension, fProcList);'#13#10'  fProcList.Free;'#13#10'  DoneCriticalSect'
+  +'ion(fLock);'#13#10'  inherited Destroy;'#13#10'end;'#13#10#13#10'{ TLPProc '
+  +'}'#13#10#13#10'procedure TLPProc.Init;'#13#10'begin'#13#10'  fCount := 0;'
+  +#13#10'  fNet := 0;'#13#10'  fGross := 0;'#13#10'end;'#13#10#13#10'construct'
+  ,'or TLPProc.Create(pName, pNameOfProc, pUnitName, pFileName: String; pRow: I'
+  +'nteger'#13#10'  );'#13#10'begin'#13#10'  fName := pName;'#13#10'  fNameOfCl'
+  +'ass := pNameOfProc;'#13#10'  fUnitName := pUnitName;'#13#10'  fFileName := '
+  +'pFileName;'#13#10'  fRow := pRow;'#13#10'  fInstrument := True;'#13#10'  In'
+  +'it;'#13#10'end;'#13#10#13#10'destructor TLPProc.Destroy;'#13#10'begin'#13#10
+  +'  fCalls.Free;'#13#10'  fCalledBy.Free;'#13#10'  inherited Destroy;'#13#10
+  +'end;'#13#10#13#10'procedure TLPProc.Calls(pProc: TLPProc);'#13#10'begin'#13
+  +#10'  if not Assigned(fCalls) then'#13#10'    fCalls := TLPProcList.Create(F'
+  +'alse);'#13#10'end;'#13#10#13#10'procedure TLPProc.CalledBy(pProc: TLPProc);'
+  +#13#10'begin'#13#10'  if not Assigned(fCalledBy) then'#13#10'    fCalledBy :'
+  +'= TLPProcList.Create(False);'#13#10'end;'#13#10#13#10'end.'#13#10#13#10
 ]);
 LazarusResources.Add('timer','PAS',[
   'unit EpikTimer;'#10#10'{ Name: EpikTimer'#10'  Description: Precision timer/'

@@ -569,6 +569,7 @@ var
   i: Integer;
   lCurStackFrame: TLPStackFrame;
 begin
+  fMasterProc.Free;
   for i := 0 to fThreads.Count - 1 do begin
     lCurStackFrame := fCurStackFrame[i];
     lCurStackFrame.fTicksEnd := Ticks();
