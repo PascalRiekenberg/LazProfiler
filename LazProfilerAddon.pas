@@ -312,19 +312,19 @@ begin
     lLRS := TLazarusResourceStream.Create('core', nil);
     try
       lLRS.SaveToFile(fProjectDir + cCoreFileName);
-    except
+    finally
       lLRS.Free;
     end;
     lLRS := TLazarusResourceStream.Create('rt', nil);
     try
       lLRS.SaveToFile(fProjectDir + cRunTimeFileName);
-    except
+    finally
       lLRS.Free;
     end;
     lLRS := TLazarusResourceStream.Create('timer', nil);
     try
       lLRS.SaveToFile(fProjectDir + cTimerFileName);
-    except
+    finally
       lLRS.Free;
     end;
   end;
