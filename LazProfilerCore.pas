@@ -63,9 +63,7 @@ type
 
   { TLPProcList }
 
-  TLPCustomProcList = specialize TObjectList<TLPProc>;
-
-  TLPProcList = class(TLPCustomProcList)
+  TLPProcList = class(specialize TObjectList<TLPProc>)
   public
     procedure Init;
     procedure Convert(pTicks: ticktype);

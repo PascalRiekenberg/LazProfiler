@@ -336,7 +336,7 @@ var
   sl, lIncludeDirs: TStringList;
   fr: TFileResolver;
   pas: TPascalScanner;
-  token, lPart: TToken;
+  token, lPart, lLastBlockToken: TToken;
   level, lProfilingChangeLevel, i: Integer;
   lImpUsesPos, lIntUsesPos, lImpPos, lIntPos: TPoint;
   lBlockStack: TBlocList;
@@ -450,8 +450,7 @@ var
           if lNameOfClass = '' then begin
             lNameOfClass := lName;
             lName := '';
-          end
-          else
+          end else
             lName := lName + '.'
         end;
       end;
@@ -532,9 +531,14 @@ begin
         end;
         tkEnd:
         begin
+          if Assigned(lBlock) then
+            lLastBlockToken := lBlock.token
+          else
+            lLastBlockToken := tkEOF;
           PopBlock;
           if Assigned(lBlock)
-          and (lBlock.token in [tkprocedure, tkfunction]) then begin
+          and (lBlock.token in [tkprocedure, tkfunction])
+          and (lLastBlockToken = tkbegin) then begin
             if lProfiling then begin
               { insert lazprofiler.exit }
               //DebugLn('      ' + lBlock.Name + ' ' + IntToStr(level));
@@ -542,7 +546,7 @@ begin
                 InsertExit(pas.CurRow - 1, pas.CurTokenPos.Column, lBlock.procid); // CurTokenPos needs FPC trunk 37235
                 if lBlock = lStartProc then begin
                   IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: Profiler not stopped in ' + lStartProc.name, pFileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-                  exit(False);
+                  Exit(False);
                 end;
               end;
             end;
