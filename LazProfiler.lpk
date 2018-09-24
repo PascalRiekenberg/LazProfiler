@@ -14,7 +14,7 @@
       <Other>
         <CustomOptions Value="$(IDEBuildOptions)"/>
         <ExecuteBefore>
-          <Command Value="before_compile.cmd $(LazarusDir) $PkgDir(etpackage)epiktimer.pas"/>
+          <Command Value="$(LazarusDir)/tools/lazres runtime.lrs &quot;LazProfilerRunTime.pas&quot;=rt &quot;LazProfilerCore.pas&quot;=core &quot;$PkgDir(etpackage)epiktimer.pas&quot;=timer     "/>
         </ExecuteBefore>
       </Other>
     </CompilerOptions>
