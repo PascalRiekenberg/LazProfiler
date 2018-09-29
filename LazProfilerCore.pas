@@ -19,57 +19,147 @@ unit LazProfilerCore;
 interface
 
 uses
-  Classes, SysUtils,
-  Generics.Collections, Generics.Defaults,
-  EpikTimer;
+  Classes,
+  EpikTimer,
+  Generics.Collections,
+  Generics.Defaults,
+  SysUtils;
 
 type
 
+  TIntegerList = specialize TList<Integer>;
+
+
+  { TLPBaseType }
+
+  TLPBaseType = class
+  private
+  protected
+    fExpanded: Boolean;
+  public
+    property Expanded: Boolean read fExpanded write fExpanded;
+  end;
+
+
+  { TLPPasUnit }
+
+  TLPPasUnit = class(TLPBaseType)
+  private
+    procedure SetFileName(pFileName: string);
+    procedure SetUnitName(pUnitName: String);
+  protected
+    fUnitName,
+    fFileName,
+    fUnitNameUp,
+    fFileNameUp: String;
+  public
+    constructor Create(pUnitName, pFileName: String);
+    property UnitName: String read fUnitName write SetUnitName;
+    property FileName: string read fFileName write SetFileName;
+    property UnitNameUp: String read fUnitNameUp;
+    property FileNameUp: String read fFileNameUp;
+  end;
+
+
+  { TLPPasUnitList }
+
+  TLPPasUnitList = class(specialize TObjectList<TLPPasUnit>)
+  private
+  protected
+  public
+    function IndexOf(pUnitName, pFileName: String): SizeInt; overload;
+    procedure SaveToStringList(pList: TStringList);
+    procedure LoadFromStringList(pList: TStringList; pVersion: Integer);
+  end;
+
+
+  { TLPPasClass }
+
+  TLPPasClass = class(TLPPasUnit)
+  private
+    procedure SetNameOfClass(pNameOfClass: String);
+  protected
+    fNameOfClass,
+    fNameOfClassUp: String;
+    fPasUnit: TLPPasUnit;
+  public
+    constructor Create(pNameOfClass, pUnitName, pFileName: String);
+    property PasUnit: TLPPasUnit read fPasUnit write fPasUnit;
+    property NameOfClass: String read fNameOfClass write SetNameOfClass;
+    property NameOfClassUp: String read fNameOfClassUp;
+  end;
+
+
+  { TLPPasClassList }
+
+  TLPPasClassList = class(specialize TObjectList<TLPPasClass>)
+  private
+  protected
+  public
+    function IndexOf(pNameOfClass, pUnitName, pFileName: String): SizeInt; overload;
+    procedure SaveToStringList(pList: TStringList);
+    procedure LoadFromStringList(pList: TStringList; pVersion: Integer);
+  end;
+
+
   { TLPProc }
 
-  TLPProcList = class;
+  TLPPasProcList = class;
 
-  TLPProc = class
+  { TLPPasProc }
+
+  TLPPasProc = class(TLPPasClass)
   private
     fName,
-    fNameOfClass,
-    fUnitName,
-    fFileName: String;
+    fNameUp: String;
     fRow: Integer;
     fNet,
     fGross: QWord;
     fCount: Integer;
+    fKind: Integer;
     fCalls,
-    fCalledBy: TLPProcList;
+    fCalledBy: TLPPasProcList;
+    fCallsCount,
+    fCalledByCount: TIntegerList;
     fInstrument: Boolean;
+    fPasClass: TLPPasClass;
+    procedure SetFileName(pFileName: String);
+    procedure SetName(pName: String);
   public
-    constructor Create(pName, pNameOfProc, pUnitName, pFileName: String;
-      pRow: Integer);
+    constructor Create(pName: String; pKind: Integer; pNameOfClass, pUnitName, pFileName: String; pRow: Integer);
     destructor Destroy; override;
     procedure Init;
-    procedure Calls(pProc: TLPProc);
-    procedure CalledBy(pProc: TLPProc);
-    property Name: String read fName write fName;
-    property NameOfClass: String read fNameOfClass write fNameOfClass;
-    property UnitName: String read fUnitName write fUnitName;
-    property FileName: String read fFileName write fFileName;
+    procedure Calls(pProc: TLPPasProc);
+    procedure CalledBy(pProc: TLPPasProc);
+    property Name: String read fName write SetName;
     property Row: Integer read fRow write fRow;
     property Count: Integer read fCount write fCount;
+    property Kind: Integer read fKind write fKind;
     property Net: QWord read fNet write fNet;
     property Gross: QWord read fGross write fGross;
     property Instrument: Boolean read fInstrument write fInstrument;
+    property NameUp: string read fNameUp;
+    property PasClass: TLPPasClass read fPasClass write fPasClass;
   end;
-  PLPProc = ^TLPProc;
+  PLPPasProc = ^TLPPasProc;
 
-  { TLPProcList }
 
-  TLPProcList = class(specialize TObjectList<TLPProc>)
+  { TLPPasProcList }
+
+  TLPPasProcList = class(specialize TObjectList<TLPPasProc>)
+  private
+    fCallCount: Integer;
   public
+    constructor Create(pOwnsObjects: Boolean = True); overload;
     procedure Init;
     procedure Convert(pTicks: ticktype);
+    function IndexOf(pName, pNameOfClass, pUnitName, pFileName: String): SizeInt;
+      overload;
     procedure SaveToStringList(pList: TStringList);
-    procedure LoadFromStringList(pList: TStringList);
+    procedure LoadFromStringList(pList: TStringList; pVersion: Integer);
+    property CallCount: Integer read fCallCount write fCallCount;
   end;
+
 
   { TLPStackFrame }
 
@@ -78,7 +168,7 @@ type
 
   TLPStackFrame = class
   private
-    fProc: TLPProc;
+    fPasProc: TLPPasProc;
     fChildList: TLPStackFrameList;
     fParent: TLPStackFrame;
     fRunning: Boolean;
@@ -94,47 +184,38 @@ type
   public
     procedure Calc;
     procedure CleanupChilds;
-    constructor Create(pProc: TLPProc; pParent: TLPStackFrame);
+    constructor Create(pProc: TLPPasProc; pParent: TLPStackFrame);
     destructor Destroy; override;
   end;
-
-  { TLPProcUsing }
-
-  TLPProcUsing = class
-  private
-    fProc: TLPProc;
-    fCount: Integer;
-  protected
-  public
-    procedure Inc;
-    constructor Create(pProc: TLPProc);
-  end;
-
-  { TLPUsingComparer }
-
-  TLPUsingComparer = class(TInterfacedObject, specialize IComparer<TLPProcUsing>)
-    function Compare(constref Left, Right: TLPProcUsing): Integer; overload;
-  end;
-
-  TLPUsingList = specialize TObjectList<TLPProcUsing>;
 
 
   { TCustomLazProfiler }
 
   TCustomLazProfiler = class
   protected
+    fUnitList: TLPPasUnitList;
+    fClassList: TLPPasClassList;
+    fProcList: TLPPasProcList;
     fAutoStart: Boolean;
     fNeedsRebuild: Boolean;
-    procedure SaveToFile(pFileName: String; pProcList: TLPProcList);
-    function LoadFromFile(pFileName: String; pProcList: TLPProcList): Boolean;
+    fSortColumn: Integer;
+    fSortDirection: Integer;
+    procedure SaveToFile(pFileName: String);
+    function LoadFromFile(pFileName: String): Boolean;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    property ProcList: TLPPasProcList read fProcList;
+    property SortColumn: Integer read fSortColumn write fSortColumn;
+    property SortDirection: Integer read fSortDirection write fSortDirection;
   end;
+
 
   { TLazProfiler }
 
   TLazProfiler = class(TCustomLazProfiler)
   private
-    fMasterProc: TLPProc;
-    fProcList: TLPProcList;
+    fMasterProc: TLPPasProc;
     fName: String;
     fTimer: TEpikTimer;
     fTicks: TickType;
@@ -169,21 +250,193 @@ type
 
 const
   cBackupExtension  = '.lazprofiler_backup';
-  cSettingExtension = '.lazprofiler_setting';
-  cSettingVersion = 1;
+
   cCoreFileName = 'LazProfilerCore.pas';
   cRunTimeFileName = 'LazProfilerRunTime.pas';
   cTimerFileName = 'EpikTimer.pas';
+
+  cSettingExtension = '.lazprofiler_setting';
+  cSettingVersion = 2;
 
 implementation
 
 uses
   LazLogger, LazFileUtils, strutils, Dialogs;
 
+{ TLPPasUnitList }
+
+function TLPPasUnitList.IndexOf(pUnitName, pFileName: String): SizeInt;
+var
+  i: Integer;
+  lPasUnit: TLPPasUnit;
+begin
+  pUnitName := UpperCase(pUnitName);
+  pFileName := UpperCase(pFileName);
+  for i := 0 to Count - 1 do begin
+    lPasUnit := Items[i];
+    if (lPasUnit.UnitNameUp = pUnitName)
+    and (lPasUnit.FileNameUp = pFileName) then
+      Exit(i);
+  end;
+  Result := -1;
+end;
+
+procedure TLPPasUnitList.SaveToStringList(pList: TStringList);
+var
+  lLine: TStringList;
+  i: Integer;
+begin
+  lLine := TStringList.Create;
+  try
+    lLine.Delimiter := ';';
+    lLine.StrictDelimiter := True;
+    for i := 0 to Count - 1 do begin
+      lLine.Clear;
+      lLine.Add(Items[i].UnitName);
+      lLine.Add(Items[i].FileName);
+      lLine.Add(BoolToStr(Items[i].Expanded, True));
+      pList.Add(lLine.DelimitedText);
+    end;
+  finally
+    lLine.Free;
+  end;
+end;
+
+procedure TLPPasUnitList.LoadFromStringList(pList: TStringList; pVersion: Integer);
+var
+  lLine: TStringList;
+  i: Integer;
+begin
+  lLine := TStringList.Create;
+  try
+    lLine.Delimiter := ';';
+    lLine.StrictDelimiter := True;
+    if pList.Count = 0 then
+      exit;
+    for i := 0 to pList.Count - 1 do begin
+      lLine.DelimitedText := pList[i];
+      if lLine.Count >= 3 then begin
+        Add(TLPPasUnit.Create(lLine[0], lLine[1]));
+        Last.Expanded := StrToBool(lLine[2]);
+      end;
+    end;
+  finally
+    lLine.Free;
+  end;
+end;
+
+
+{ TLPPasClassList }
+
+function TLPPasClassList.IndexOf(pNameOfClass, pUnitName, pFileName: String): SizeInt;
+var
+  i: Integer;
+  lPasClass: TLPPasClass;
+begin
+  pNameOfClass := UpperCase(pNameOfClass);
+  pUnitName := UpperCase(pUnitName);
+  pFileName := UpperCase(pFileName);
+  for i := 0 to Count - 1 do begin
+    lPasClass := Items[i];
+    if (lPasClass.fNameOfClassUp = pNameOfClass)
+    and (lPasClass.fUnitNameUp = pUnitName)
+    and (lPasClass.fFileNameUp = pFileName) then
+      Exit(i);
+  end;
+  Result := -1;
+end;
+
+procedure TLPPasClassList.SaveToStringList(pList: TStringList);
+var
+  lLine: TStringList;
+  i: Integer;
+begin
+  lLine := TStringList.Create;
+  try
+    lLine.Delimiter := ';';
+    lLine.StrictDelimiter := True;
+    for i := 0 to Count - 1 do begin
+      lLine.Clear;
+      lLine.Add(Items[i].NameOfClass);
+      lLine.Add(Items[i].UnitName);
+      lLine.Add(Items[i].FileName);
+      lLine.Add(BoolToStr(Items[i].Expanded, True));
+      pList.Add(lLine.DelimitedText);
+    end;
+  finally
+    lLine.Free;
+  end;
+end;
+
+procedure TLPPasClassList.LoadFromStringList(pList: TStringList; pVersion: Integer);
+var
+  lLine: TStringList;
+  i: Integer;
+begin
+  lLine := TStringList.Create;
+  try
+    lLine.Delimiter := ';';
+    lLine.StrictDelimiter := True;
+    if pList.Count = 0 then
+      exit;
+    for i := 0 to pList.Count - 1 do begin
+      lLine.DelimitedText := pList[i];
+      if lLine.Count >= 4 then begin
+        Add(TLPPasClass.Create(lLine[0], lLine[1], lLine[2]));
+        Last.Expanded := StrToBool(lLine[3]);
+      end;
+    end;
+  finally
+    lLine.Free;
+  end;
+end;
+
+
+{ TLPPasClass }
+
+procedure TLPPasClass.SetNameOfClass(pNameOfClass: String);
+begin
+  if fNameOfClass = pNameOfClass then Exit;
+  fNameOfClass := pNameOfClass;
+  fNameOfClassUp := UpperCase(pNameOfClass);
+end;
+
+constructor TLPPasClass.Create(pNameOfClass, pUnitName, pFileName: String);
+begin
+  inherited Create(pUnitName, pFileName);
+  fNameOfClass := pNameOfClass;
+  fNameOfClassUp := UpperCase(pNameOfClass);
+end;
+
+
+{ TLPPasUnit }
+
+procedure TLPPasUnit.SetFileName(pFileName: string);
+begin
+  if fFileName = pFileName then Exit;
+  fFileName := pFileName;
+  fFileNameUp := UpperCase(pFileName);
+end;
+
+procedure TLPPasUnit.SetUnitName(pUnitName: String);
+begin
+  if fUnitName = pUnitName then Exit;
+  fUnitName := pUnitName;
+  fUnitNameUp := UpperCase(pUnitName);
+end;
+
+constructor TLPPasUnit.Create(pUnitName, pFileName: String);
+begin
+  fUnitName := pUnitName;
+  fUnitNameUp := UpperCase(pUnitName);
+  fFileName := pFileName;
+  fFileNameUp := UpperCase(pFileName);
+end;
+
+
 { TCustomLazProfiler }
 
-procedure TCustomLazProfiler.SaveToFile(pFileName: String;
-  pProcList: TLPProcList);
+procedure TCustomLazProfiler.SaveToFile(pFileName: String);
 var
   lFile,
   lLine: TStringList;
@@ -192,14 +445,25 @@ begin
   lFile := TStringList.Create;
   lLine := TStringList.Create;
   try
+    // header
     lLine.Delimiter := ';';
     lLine.StrictDelimiter := True;
     lLine.Clear;
     lLine.Add(IntToStr(cSettingVersion));
     lLine.Add(ifthen(fAutoStart, 'AutoStart', ''));
     lLine.Add(ifthen(fNeedsRebuild, 'NeedsRebuild', ''));
+    lLine.Add(IntToStr(fSortColumn));
+    lLine.Add(IntToStr(fSortDirection));
+    lLine.Add(IntToStr(fUnitList.Count));
+    lLine.Add(IntToStr(fClassList.Count));
+    lLine.Add(IntToStr(fProcList.Count));
     lFile.Add(lLine.DelimitedText);
-    pProcList.SaveToStringList(lFile);
+    // units
+    fUnitList.SaveToStringList(lFile);
+    // classes
+    fClassList.SaveToStringList(lFile);
+    // procs
+    fProcList.SaveToStringList(lFile);
     lFile.SaveToFile(pFileName);
   finally
     lLine.Free;
@@ -207,19 +471,23 @@ begin
   end;
 end;
 
-function TCustomLazProfiler.LoadFromFile(pFileName: String;
-  pProcList: TLPProcList): Boolean;
+function TCustomLazProfiler.LoadFromFile(pFileName: String): Boolean;
 var
-  lFile, lLine: TStringList;
-  lVersion: LongInt;
+  lFile, lLine, lTemp: TStringList;
+  lVersion, lUnitCount, lClassCount, lProcCount: LongInt;
+  lPasClass: TLPPasClass;
+  lPasUnit: TLPPasUnit;
+  lPasProc: TLPPasProc;
+  i, j, p: Integer;
 begin
-  //DebugLn('   LoadFormFile: '+pFileName);
+  DebugLn('*** LazProfiler: LoadFromFile: '+pFileName);
   if not FileExists(pFileName) then
     Exit(False);
   Result := True;
   lFile := TStringList.Create;
   lLine := TStringList.Create;
-  pProcList.Clear;
+  lTemp := TStringList.Create;
+  fProcList.Clear;
   try
     lFile.LoadFromFile(pFileName);
     if lFile.Count >= 1 then begin
@@ -232,43 +500,96 @@ begin
           fAutoStart := True;
         If UpperCase(lLine[2]) = 'NEEDSREBUILD' then
           fNeedsRebuild := True;
+        if lVersion > 1 then begin
+          fSortColumn := StrToInt(lLine[3]);
+          fSortDirection := StrToInt(lLine[4]);
+          lUnitCount := StrToInt(lLine[5]);
+          lClassCount := StrToInt(lLine[6]);
+          lProcCount := StrToInt(lLine[7]);
+        end;
       end else
         Exit;
       lFile.Delete(0);
-      if lFile.Count > 0 then
-        pProcList.LoadFromStringList(lFile);
+      if lVersion = 1 then begin
+        if lFile.Count > 0 then
+          fProcList.LoadFromStringList(lFile, lVersion);
+      end else begin
+        p := 0;
+        if lUnitCount > 0 then begin;
+          lTemp.Clear;
+          for i := 0 to lUnitCount - 1 do begin
+            lTemp.Add(lFile[p]);
+            inc(p);
+          end;
+          fUnitList.LoadFromStringList(lTemp, lVersion);
+        end;
+        if lClassCount > 0 then begin;
+          lTemp.Clear;
+          for i := 0 to lClassCount - 1 do begin
+            lTemp.Add(lFile[p]);
+            inc(p);
+          end;
+          fClassList.LoadFromStringList(lTemp, lVersion);
+        end;
+        if lProcCount > 0 then begin;
+          lTemp.Clear;
+          for i := 0 to lProcCount - 1 do begin
+            lTemp.Add(lFile[p]);
+            inc(p);
+          end;
+          fProcList.LoadFromStringList(lTemp, lVersion);
+        end;
+      end;
+      for i := 0 to fProcList.Count - 1 do begin
+        lPasProc := fProcList[i];
+        // search unit
+        j := fUnitList.IndexOf(lPasProc.UnitName, lPasProc.FileName);
+        if j >= 0 then begin
+          lPasUnit := fUnitList[j]
+        end else begin
+          lPasUnit := TLPPasUnit.Create(lPasProc.UnitName, lPasProc.FileName);
+          fUnitList.Add(lPasUnit);
+        end;
+        // search class
+        j := fClassList.IndexOf(lPasProc.NameOfClass, lPasProc.UnitName, lPasProc.FileName);
+        if j >= 0 then begin
+          lPasClass := fClassList[j]
+        end else begin
+          lPasClass := TLPPasClass.Create(lPasProc.NameOfClass, lPasProc.UnitName, lPasProc.FileName);
+          fClassList.Add(lPasClass);
+        end;
+        // connect
+        lPasClass.PasUnit := lPasUnit;
+        lPasProc.PasUnit := lPasUnit;
+        lPasProc.PasClass := lPasClass;
+      end;
     end;
-    //DebugLn('   Count='+IntToStr(pProcList.Count));
+    //DebugLn('   Count='+IntToStr(fProcList.Count));
   finally
+    lTemp.Free;
     lLine.Free;
     lFile.Free;
   end;
 end;
 
-{ TLPUsingComparer }
-
-function TLPUsingComparer.Compare(constref Left, Right: TLPProcUsing): Integer;
+constructor TCustomLazProfiler.Create;
 begin
-  if @Left.fProc < @Right.fProc then
-    Result := -1
-  else if @Left.fProc > @Right.fProc then
-    Result := 1
-  else
-    Result := 0;
+  inherited Create;
+  fClassList := TLPPasClassList.Create(True);
+  fUnitList := TLPPasUnitList.Create(True);
+  fProcList := TLPPasProcList.Create(True);
+  fSortColumn := 0;
+  fSortDirection := 1;
 end;
 
-{ TLPProcUsing }
-
-procedure TLPProcUsing.Inc;
+destructor TCustomLazProfiler.Destroy;
 begin
-  fCount := fCount + 1;
+  fProcList.Free;
+  fClassList.Free;
+  fUnitList.Free;
+  inherited Destroy;
 end;
 
-constructor TLPProcUsing.Create(pProc: TLPProc);
-begin
-  fProc := pProc;
-  fCount := 1;
-end;
 
 { TLPStackFrame }
 
@@ -290,10 +611,10 @@ begin
   end;
   FreeAndNil(fChildList);
   { store infos }
-  if Assigned(fProc) and fRunning then begin
-    fProc.Count := fProc.Count + 1;
-    fProc.fNet := fProc.fNet + fNet - fOff;
-    fProc.fGross := fProc.fGross + fGross - fOverhead - fOff;
+  if Assigned(fPasProc) and fRunning then begin
+    fPasProc.Count := fPasProc.Count + 1;
+    fPasProc.fNet := fPasProc.fNet + fNet - fOff;
+    fPasProc.fGross := fPasProc.fGross + fGross - fOverhead - fOff;
   end;
 end;
 
@@ -305,9 +626,9 @@ begin
     fChildList[i].Calc;
 end;
 
-constructor TLPStackFrame.Create(pProc: TLPProc; pParent: TLPStackFrame);
+constructor TLPStackFrame.Create(pProc: TLPPasProc; pParent: TLPStackFrame);
 begin
-  fProc := pProc;
+  fPasProc := pProc;
   fParent := pParent;
   if Assigned(fParent) then
     fParent.fChildList.Add(Self);
@@ -322,9 +643,16 @@ begin
   inherited Destroy;
 end;
 
-{ TLPProcList }
 
-procedure TLPProcList.Init;
+{ TLPPasProcList }
+
+constructor TLPPasProcList.Create(pOwnsObjects: Boolean);
+begin
+  inherited Create(pOwnsObjects);
+  fCallCount := 0;
+end;
+
+procedure TLPPasProcList.Init;
 var
   i: Integer;
 begin
@@ -332,7 +660,7 @@ begin
     Items[i].Init;
 end;
 
-procedure TLPProcList.Convert(pTicks: TickType);
+procedure TLPPasProcList.Convert(pTicks: ticktype);
 var
   i: Integer;
 begin
@@ -342,7 +670,7 @@ begin
   end;
 end;
 
-procedure TLPProcList.SaveToStringList(pList: TStringList);
+procedure TLPPasProcList.SaveToStringList(pList: TStringList);
 var
   lLine: TStringList;
   i: Integer;
@@ -354,6 +682,7 @@ begin
     for i := 0 to Count - 1 do begin
       lLine.Clear;
       lLine.Add(Items[i].Name);
+      lLine.Add(IntToStr(Items[i].Kind));
       lLine.Add(Items[i].NameOfClass);
       lLine.Add(Items[i].UnitName);
       lLine.Add(Items[i].FileName);
@@ -369,7 +698,27 @@ begin
   end;
 end;
 
-procedure TLPProcList.LoadFromStringList(pList: TStringList);
+function TLPPasProcList.IndexOf(pName, pNameOfClass, pUnitName, pFileName: String): SizeInt;
+var
+  lPasProc: TLPPasProc;
+  i: Integer;
+begin
+  pName := UpperCase(pName);
+  pNameOfClass := UpperCase(pNameOfClass);
+  pUnitName := UpperCase(pUnitName);
+  pFileName := UpperCase(pFileName);
+  for i := 0 to Count - 1 do begin
+    lPasProc := Self[i];
+    if (lPasProc.NameUp = pName)
+    and (lPasProc.NameOfClassUp = pNameOfClass)
+    and (lPasProc.UnitNameUp = pUnitName)
+    and (lPasProc.FileNameUp = pFileName) then
+      Exit(i);
+  end;
+  Result := -1;
+end;
+
+procedure TLPPasProcList.LoadFromStringList(pList: TStringList; pVersion: Integer);
 var
   lLine: TStringList;
   i: Integer;
@@ -383,11 +732,19 @@ begin
     for i := 0 to pList.Count - 1 do begin
       lLine.DelimitedText := pList[i];
       if lLine.Count >= 9 then begin
-        Add(TLPProc.Create(lLine[0], lLine[1], lLine[2], lLine[3], StrToInt(lLine[4])));
-        Last.Count := StrToInt(lLine[5]);
-        Last.Net := StrToQWord(lLine[6]);
-        Last.Gross := StrToQWord(lLine[7]);
-        Last.Instrument := StrToBool(lLine[8]);
+        if pVersion = 1 then begin
+          Add(TLPPasProc.Create(lLine[0], 0, lLine[1], lLine[2], lLine[3], StrToInt(lLine[4])));
+          Last.Count := StrToInt(lLine[5]);
+          Last.Net := StrToQWord(lLine[6]);
+          Last.Gross := StrToQWord(lLine[7]);
+          Last.Instrument := StrToBool(lLine[8]);
+        end else begin
+          Add(TLPPasProc.Create(lLine[0], StrToInt(lLine[1]), lLine[2], lLine[3], lLine[4], StrToInt(lLine[5])));
+          Last.Count := StrToInt(lLine[6]);
+          Last.Net := StrToQWord(lLine[7]);
+          Last.Gross := StrToQWord(lLine[8]);
+          Last.Instrument := StrToBool(lLine[9]);
+        end;
         //if not Last.Instrument then
         //  DebugLn('*** do not instrument '+Last.Name);
       end;
@@ -396,6 +753,7 @@ begin
     lLine.Free;
   end;
 end;
+
 
 { TLazProfiler }
 
@@ -485,8 +843,8 @@ begin
       ShowMessage('TLazProfiler.ExitProfiling: pProcID >= fProcList.Count: '+IntToStr(pProcID)+'>='+IntToStr(fProcList.Count));
       Exit;
     end;
-    if lCurStackFrame.fProc <> fProcList[pProcID] then
-      ShowMessage('TLazProfiler.ExitProfiling: Stack mismatch: '+lCurStackFrame.fProc.Name+'<->'+fProcList[pProcID].name);
+    if lCurStackFrame.fPasProc <> fProcList[pProcID] then
+      ShowMessage('TLazProfiler.ExitProfiling: Stack mismatch: '+lCurStackFrame.fPasProc.Name+'<->'+fProcList[pProcID].name);
     lCurStackFrame.fOff := OffTicks;
     lCurStackFrame.CleanupChilds;
     fCurStackFrame[lIdx] := lCurStackFrame.fParent;
@@ -539,7 +897,6 @@ begin
   inherited Create;
   InitCriticalSection(fLock);
   fName := AppendPathDelim(ExtractFileDir(pProgramm))+ExtractFileNameOnly(pProgramm);
-  fProcList := TLPProcList.Create(True);
   fTimer := TEpikTimer.Create(nil);
   if fTimer.HWCapabilityDataAvailable and fTimer.HWTickSupportAvailable then begin
     Ticks := @HWTicks;
@@ -550,7 +907,7 @@ begin
     fTicks := fTimer.SysTimebase.TicksFrequency;
     DebugLn('### LazProfiler: SysTicks used. Freq='+IntToStr(fTicks));
   end;
-  fMasterProc := TLPProc.Create('Master', '', '', '', -1);
+  fMasterProc := TLPPasProc.Create('Master', 0, '', '', '', -1);
   fOffTicks := 0;
   fThreads := TList.Create;
   lCurStackFrame := TLPStackFrame.Create(fMasterProc, nil);
@@ -558,7 +915,7 @@ begin
   lCurStackFrame.fTicksStart := lCurStackFrame.fTicksInit;
   SetLength(fCurStackFrame, 100);
   fCurStackFrame[fThreads.Add(Pointer(ThreadID))] := lCurStackFrame;
-  fLoaded := LoadFromFile(fName+cSettingExtension, fProcList);
+  fLoaded := LoadFromFile(fName+cSettingExtension);
   fRunning := fAutoStart;
 end;
 
@@ -586,50 +943,87 @@ begin
   else
     DebugLn('***** LazProfiler: fTicks='+IntToStr(fTicks));
   if fLoaded then
-    SaveToFile(fName+cSettingExtension, fProcList);
-  fProcList.Free;
+    SaveToFile(fName+cSettingExtension);
   DoneCriticalSection(fLock);
   inherited Destroy;
 end;
 
-{ TLPProc }
 
-procedure TLPProc.Init;
+{ TLPPasProc }
+
+procedure TLPPasProc.Init;
 begin
   fCount := 0;
   fNet := 0;
   fGross := 0;
 end;
 
-constructor TLPProc.Create(pName, pNameOfProc, pUnitName, pFileName: String; pRow: Integer
-  );
+procedure TLPPasProc.SetFileName(pFileName: String);
 begin
-  fName := pName;
-  fNameOfClass := pNameOfProc;
-  fUnitName := pUnitName;
+  if fFileName = pFileName then Exit;
   fFileName := pFileName;
+  fFileNameUp := UpperCase(fFileName);
+end;
+
+procedure TLPPasProc.SetName(pName: String);
+begin
+  if fName = pName then Exit;
+  fName := pName;
+  fNameUp := UpperCase(pName);
+end;
+
+constructor TLPPasProc.Create(pName: String; pKind: Integer; pNameOfClass, pUnitName, pFileName: String; pRow: Integer);
+begin
+  inherited Create(pNameOfClass, pUnitName, pFileName);
+  fName := pName;
+  fNameUp := UpperCase(pName);
   fRow := pRow;
   fInstrument := True;
+  fKind := pKind;
   Init;
 end;
 
-destructor TLPProc.Destroy;
+destructor TLPPasProc.Destroy;
 begin
   fCalls.Free;
   fCalledBy.Free;
+  fCallsCount.Free;
+  fCalledByCount.Free;
   inherited Destroy;
 end;
 
-procedure TLPProc.Calls(pProc: TLPProc);
+procedure TLPPasProc.Calls(pProc: TLPPasProc);
+var
+  i: SizeInt;
 begin
-  if not Assigned(fCalls) then
-    fCalls := TLPProcList.Create(False);
+  if not Assigned(fCalls) then begin
+    fCalls := TLPPasProcList.Create(False);
+    fCallsCount := TIntegerList.Create;
+  end;
+  i := fCalls.IndexOf(pProc);
+  if i = -1 then begin
+    fCalls.Add(pProc);
+    fCallsCount.Add(1);
+  end else begin
+    fCallsCount[i] := fCallsCount[i] + 1;
+  end;
 end;
 
-procedure TLPProc.CalledBy(pProc: TLPProc);
+procedure TLPPasProc.CalledBy(pProc: TLPPasProc);
+var
+  i: SizeInt;
 begin
-  if not Assigned(fCalledBy) then
-    fCalledBy := TLPProcList.Create(False);
+  if not Assigned(fCalledBy) then begin
+    fCalledBy := TLPPasProcList.Create(False);
+    fCalledByCount := TIntegerList.Create;
+  end;
+  i := fCalledBy.IndexOf(pProc);
+  if i = -1 then begin
+    fCalledBy.Add(pProc);
+    fCalledByCount.Add(1);
+  end else begin
+    fCalledByCount[i] := fCalledByCount[i] + 1;
+  end;
 end;
 
 end.

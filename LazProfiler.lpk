@@ -14,13 +14,13 @@
       <Other>
         <CustomOptions Value="$(IDEBuildOptions)"/>
         <ExecuteBefore>
-          <Command Value="$(LazarusDir)/tools/lazres runtime.lrs &quot;LazProfilerRunTime.pas&quot;=rt &quot;LazProfilerCore.pas&quot;=core &quot;$PkgDir(etpackage)epiktimer.pas&quot;=timer     "/>
+          <Command Value="$MakeExe($(LazarusDir)/tools/lazres) runtime.lrs &quot;LazProfilerRunTime.pas&quot;=rt &quot;LazProfilerCore.pas&quot;=core &quot;$PkgDir(etpackage)epiktimer.pas&quot;=timer"/>
         </ExecuteBefore>
       </Other>
     </CompilerOptions>
     <Description Value="LazProfiler is an IDE addon for profiling your programs with one click."/>
-    <Version Minor="1" Release="3"/>
-    <Files Count="5">
+    <Version Minor="2"/>
+    <Files Count="6">
       <Item1>
         <Filename Value="LazProfilerAddon.pas"/>
         <HasRegisterProc Value="True"/>
@@ -39,9 +39,13 @@
         <UnitName Value="LazProfilerWindow"/>
       </Item4>
       <Item5>
+        <Filename Value="vtvObject.pas"/>
+        <UnitName Value="vtvObject"/>
+      </Item5>
+      <Item6>
         <Filename Value="runtime.lrs"/>
         <Type Value="LRS"/>
-      </Item5>
+      </Item6>
     </Files>
     <RequiredPkgs Count="6">
       <Item1>

@@ -9,7 +9,7 @@ interface
 
 uses
   LazProfilerAddon, LazProfilerCore, LazProfilerRunTime, LazProfilerWindow, 
-  LazarusPackageIntf;
+  vtvObject, LazarusPackageIntf;
 
 implementation
 
