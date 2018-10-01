@@ -1187,6 +1187,7 @@ begin
       end;
     end;
   finally
+    ClearStack;
     lBlockStack.Free;
     pas.Free;
     fr.Free;
