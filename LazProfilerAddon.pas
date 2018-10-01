@@ -604,10 +604,7 @@ begin
   try
     lPathList.Delimiter := ';';
     lPathList.StrictDelimiter := True;
-    { scan includes}
-    lPathList.DelimitedText := CodeToolBoss.GetIncludePathForDirectory('');
-    CheckDir(lPathList);
-    { scan includes}
+    { scan sources}
     lPathList.DelimitedText := CodeToolBoss.GetUnitPathForDirectory('');
     CheckDir(lPathList);
   finally
