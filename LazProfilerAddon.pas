@@ -117,6 +117,7 @@ type
   TProfilerAddon = class(TCustomLazProfiler)
   private
     fProfiling: Boolean;
+    fProject: TLazProject;
     fSourcesInstrumented: Boolean;
     fFileList,
     fIncludeList: TLPFileList;
@@ -125,7 +126,7 @@ type
     fTargetDir: String;
     fTargetName: String;
     fOldModified: Boolean;
-    procedure BuildFileList(pExtensionMask: String);
+    procedure BuildFileList(pExtensionMask: String; pCheckForBelongsToProject: Boolean);
     function AddProc(pName: String; pToken: Integer; pNameOfClass, pUnitName, pFileName: String; pRow: Integer): Integer;
   protected
     fOldUnitList: TLPPasUnitList;
@@ -139,7 +140,7 @@ type
     procedure ProjectBuildingFinished(Sender: TObject; BuildSuccessful: Boolean);
     procedure RunFinished(Sender: TObject);
     procedure LoadResult;
-    function ProjectOpened(Sender: TObject; AProject: TLazProject): TModalResult;
+    function ProjectOpened(Sender: TObject; pProject: TLazProject): TModalResult;
     function ProjectClose(Sender: TObject; AProject: TLazProject): TModalResult;
     procedure CreateProfilerWindow(Sender: TObject; pFormName: string; var pForm: TCustomForm; DoDisableAutoSizing: boolean);
   public
@@ -173,7 +174,8 @@ uses
   IDEExternToolIntf,
   LResources,
   IDEWindowIntf,
-  LazProfilerWindow;
+  LazProfilerWindow,
+  PackageIntf;
 
 type
 
@@ -531,11 +533,54 @@ end;
 
 { TProfilerAddon }
 
-procedure TProfilerAddon.BuildFileList(pExtensionMask: String);
+procedure TProfilerAddon.BuildFileList(pExtensionMask: String; pCheckForBelongsToProject: Boolean);
 var
   lFPCSrcDir, lLazSrcDir: String;
   lPathList: TStringList;
   lLengthFPCSrcDir, lLengthLazSrcDir: Integer;
+
+  function BelongsToProject(pFileName: string): Boolean;
+  var
+    Owners: TFPList;
+    i: Integer;
+    o: TObject;
+  begin
+    Result := False;
+    Owners := PackageEditingInterface.GetPossibleOwnersOfUnit(pFileName, []);
+    if not Assigned(Owners) then begin
+      // unit is not directly associated with a project/package
+      // maybe the unit was for some reason not added, but is reachable
+      // search in all unit paths of all projects/packages
+      // Beware: This can lead to false hits
+      Owners:=PackageEditingInterface.GetPossibleOwnersOfUnit(pFileName, [piosfExcludeOwned,piosfIncludeSourceDirectories]);
+    end;
+    if not Assigned(Owners) then
+      Exit;
+    try
+      for i := 0 to Owners.Count - 1 do begin
+        o := TObject(Owners[i]);
+        if o is TIDEPackage then begin
+          //fPackageList.Add(TIDEPackage(o).Filename);
+          Result := False;
+          Exit;
+        end else if (o is TLazProject)
+        and (TLazProject(o).ProjectInfoFile = fProject.ProjectInfoFile) then begin
+          Result := True;
+        end;
+      end;
+    finally
+      Owners.Free;
+    end;
+  end;
+
+  procedure AddFile(pFileName: String);
+  begin
+    if (fFileList.IndexOf(pFileName) >= 0)
+    or (pCheckForBelongsToProject
+    and not BelongsToProject(pFileName)) then
+      Exit;
+    fFileList.Add(TLPFile.Create(pFileName));
+  end;
 
   procedure ScanDir(pDir, pExtensionMask: String);
   var
@@ -558,10 +603,7 @@ var
             ScanDir(pDir + Info.Name, pExtensionMask);
         end else begin
           if ExtensionList.IndexOf(ExtractFileExt(Info.Name)) <> -1 then
-          begin
-            if fFileList.IndexOf(pDir + Info.Name) = -1 then
-              fFileList.Add(TLPFile.Create(pDir + Info.Name));
-          end;
+            AddFile(pDir + Info.Name);
         end;
       until FindNext(Info) <> 0;
     end;
@@ -722,7 +764,7 @@ begin
   fProcList := lList;
   fProcList.Clear;
 
-  BuildFileList('.pp;.pas;.lpr');
+  BuildFileList('.pp;.pas;.lpr', True);
 
   fAutoStart := True;
   fIncludeList.Clear;
@@ -924,7 +966,6 @@ var
   end;
 
 begin
-  //LazarusIDE.ActiveProject.
   Result := True;
   lCurFile := pFile;
   //DebugLn('  '+pFile.FileName);
@@ -1168,7 +1209,7 @@ begin
   DeleteFile(fProjectDir + cCoreFileName);
   DeleteFile(fProjectDir + cTimerFileName);
 
-  BuildFileList(cBackupExtension);
+  BuildFileList(cBackupExtension, False);
 
   //fFileList.Sort;
   for i := 0 to fFileList.Count - 1 do
@@ -1236,12 +1277,13 @@ begin
   end;
 end;
 
-function TProfilerAddon.ProjectOpened(Sender: TObject; AProject: TLazProject): TModalResult;
+function TProfilerAddon.ProjectOpened(Sender: TObject; pProject: TLazProject): TModalResult;
 var
   lTargetFileName: String;
 begin
   Result := mrOK;
-  DebugLn('*** LazProfiler: ProjectOpened: '+AProject.ProjectInfoFile);
+  DebugLn('*** LazProfiler: ProjectOpened: '+pProject.ProjectInfoFile);
+  fProject := pProject;
   fProcList.Clear;
   fOldProcList.Clear;
   { get project path and name }
@@ -1249,15 +1291,15 @@ begin
   IDEMacros.SubstituteMacros(lTargetFileName);
   fTargetDir := AppendPathDelim(ExtractFileDir(lTargetFileName));
   fTargetName := ExtractFileNameOnly(lTargetFileName);
-  fProjectDir := AppendPathDelim(ExtractFileDir(AProject.ProjectInfoFile));
-  fIncludePath := AProject.LazCompilerOptions.IncludePath;
+  fProjectDir := AppendPathDelim(ExtractFileDir(pProject.ProjectInfoFile));
+  fIncludePath := pProject.LazCompilerOptions.IncludePath;
   fProfiling := False;
-  AProject.Flags := AProject.Flags - [pfAlwaysBuild];
+  pProject.Flags := pProject.Flags - [pfAlwaysBuild];
   LoadResult;
   if fNeedsRebuild then
-    AProject.Flags := AProject.Flags + [pfAlwaysBuild];
+    pProject.Flags := pProject.Flags + [pfAlwaysBuild];
   fOldModified := False;
-  AProject.Modified := False;
+  pProject.Modified := False;
 end;
 
 function TProfilerAddon.ProjectClose(Sender: TObject; AProject: TLazProject): TModalResult;
