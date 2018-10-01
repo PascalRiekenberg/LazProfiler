@@ -552,13 +552,16 @@ var
     if FindFirst(pDir + AllFilesMask, faAnyFile and faDirectory, Info) = 0 then
     begin
       repeat
-        if ((Info.Attr and faDirectory) = faDirectory) and (Info.Name <> '.') and (Info.Name <> '..') then
-          FileSearch(pDir + Info.Name, pExtensionMask);
-
-        if ExtensionList.IndexOf(ExtractFileExt(Info.Name)) <> -1 then
-        begin
-          if fFileList.IndexOf(pDir + Info.Name) = -1 then
-            fFileList.Add(TLPFile.Create(pDir + Info.Name));
+        if ((Info.Attr and faDirectory) = faDirectory) then begin
+          if (Info.Name <> '.')
+          and (Info.Name <> '..') then
+            ScanDir(pDir + Info.Name, pExtensionMask);
+        end else begin
+          if ExtensionList.IndexOf(ExtractFileExt(Info.Name)) <> -1 then
+          begin
+            if fFileList.IndexOf(pDir + Info.Name) = -1 then
+              fFileList.Add(TLPFile.Create(pDir + Info.Name));
+          end;
         end;
       until FindNext(Info) <> 0;
     end;
