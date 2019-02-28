@@ -22,7 +22,7 @@ uses
   Classes,
   Generics.Collections,
   SysUtils,
-  VirtualTrees;
+  Laz.VirtualTrees;
 
 type
 

@@ -49,7 +49,7 @@
     </Files>
     <RequiredPkgs Count="6">
       <Item1>
-        <PackageName Value="virtualtreeview_package"/>
+        <PackageName Value="laz.virtualtreeview_package"/>
       </Item1>
       <Item2>
         <PackageName Value="CodeTools"/>

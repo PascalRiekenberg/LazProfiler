@@ -128,129 +128,129 @@ LazarusResources.Add('core','PAS',[
   +''';'#13#10'  cTimerFileName = ''EpikTimer.pas'';'#13#10#13#10'  cSettingExt'
   +'ension = ''.lazprofiler_setting'';'#13#10'  cSettingVersion = 2;'#13#10#13
   +#10'implementation'#13#10#13#10'uses'#13#10'  LazLogger, LazFileUtils, strut'
-  +'ils, Dialogs;'#13#10#13#10'{ TLPPasUnitList }'#13#10#13#10'function TLPPasU'
-  +'nitList.IndexOf(pUnitName, pFileName: String): SizeInt;'#13#10'var'#13#10' '
-  +' i: Integer;'#13#10'  lPasUnit: TLPPasUnit;'#13#10'begin'#13#10'  pUnitName'
-  +' := UpperCase(pUnitName);'#13#10'  pFileName := UpperCase(pFileName);'#13#10
-  +'  for i := 0 to Count - 1 do begin'#13#10'    lPasUnit := Items[i];'#13#10
-  +'    if (lPasUnit.UnitNameUp = pUnitName)'#13#10'    and (lPasUnit.FileNameU'
-  +'p = pFileName) then'#13#10'      Exit(i);'#13#10'  end;'#13#10'  Result := '
-  +'-1;'#13#10'end;'#13#10#13#10'procedure TLPPasUnitList.SaveToStringList(pLis'
-  +'t: TStringList);'#13#10'var'#13#10'  lLine: TStringList;'#13#10'  i: Intege'
-  +'r;'#13#10'begin'#13#10'  lLine := TStringList.Create;'#13#10'  try'#13#10' '
-  +'   lLine.Delimiter := '';'';'#13#10'    lLine.StrictDelimiter := True;'#13
-  +#10'    for i := 0 to Count - 1 do begin'#13#10'      lLine.Clear;'#13#10'  '
-  +'    lLine.Add(Items[i].UnitName);'#13#10'      lLine.Add(Items[i].FileName)'
-  +';'#13#10'      lLine.Add(BoolToStr(Items[i].Expanded, True));'#13#10'      '
-  ,'pList.Add(lLine.DelimitedText);'#13#10'    end;'#13#10'  finally'#13#10'   '
-  +' lLine.Free;'#13#10'  end;'#13#10'end;'#13#10#13#10'procedure TLPPasUnitLis'
-  +'t.LoadFromStringList(pList: TStringList; pVersion: Integer);'#13#10'var'#13
-  +#10'  lLine: TStringList;'#13#10'  i: Integer;'#13#10'begin'#13#10'  lLine :'
-  +'= TStringList.Create;'#13#10'  try'#13#10'    lLine.Delimiter := '';'';'#13
-  +#10'    lLine.StrictDelimiter := True;'#13#10'    if pList.Count = 0 then'#13
-  +#10'      exit;'#13#10'    for i := 0 to pList.Count - 1 do begin'#13#10'   '
-  +'   lLine.DelimitedText := pList[i];'#13#10'      if lLine.Count >= 3 then b'
-  +'egin'#13#10'        Add(TLPPasUnit.Create(lLine[0], lLine[1]));'#13#10'    '
-  +'    Last.Expanded := StrToBool(lLine[2]);'#13#10'      end;'#13#10'    end;'
-  +#13#10'  finally'#13#10'    lLine.Free;'#13#10'  end;'#13#10'end;'#13#10#13
-  +#10#13#10'{ TLPPasClassList }'#13#10#13#10'function TLPPasClassList.IndexOf('
-  +'pNameOfClass, pUnitName, pFileName: String): SizeInt;'#13#10'var'#13#10'  i'
-  +': Integer;'#13#10'  lPasClass: TLPPasClass;'#13#10'begin'#13#10'  pNameOfCl'
-  +'ass := UpperCase(pNameOfClass);'#13#10'  pUnitName := UpperCase(pUnitName);'
-  +#13#10'  pFileName := UpperCase(pFileName);'#13#10'  for i := 0 to Count - 1'
-  +' do begin'#13#10'    lPasClass := Items[i];'#13#10'    if (lPasClass.fNameO'
-  +'fClassUp = pNameOfClass)'#13#10'    and (lPasClass.fUnitNameUp = pUnitName)'
-  +#13#10'    and (lPasClass.fFileNameUp = pFileName) then'#13#10'      Exit(i)'
-  +';'#13#10'  end;'#13#10'  Result := -1;'#13#10'end;'#13#10#13#10'procedure T'
-  +'LPPasClassList.SaveToStringList(pList: TStringList);'#13#10'var'#13#10'  lL'
-  +'ine: TStringList;'#13#10'  i: Integer;'#13#10'begin'#13#10'  lLine := TStri'
-  +'ngList.Create;'#13#10'  try'#13#10'    lLine.Delimiter := '';'';'#13#10'   '
-  +' lLine.StrictDelimiter := True;'#13#10'    for i := 0 to Count - 1 do begin'
-  +#13#10'      lLine.Clear;'#13#10'      lLine.Add(Items[i].NameOfClass);'#13
-  +#10'      lLine.Add(Items[i].UnitName);'#13#10'      lLine.Add(Items[i].File'
-  +'Name);'#13#10'      lLine.Add(BoolToStr(Items[i].Expanded, True));'#13#10' '
-  +'     pList.Add(lLine.DelimitedText);'#13#10'    end;'#13#10'  finally'#13#10
-  +'    lLine.Free;'#13#10'  end;'#13#10'end;'#13#10#13#10'procedure TLPPasClas'
-  +'sList.LoadFromStringList(pList: TStringList; pVersion: Integer);'#13#10'var'
-  +#13#10'  lLine: TStringList;'#13#10'  i: Integer;'#13#10'begin'#13#10'  lLin'
-  +'e := TStringList.Create;'#13#10'  try'#13#10'    lLine.Delimiter := '';'';'
-  +#13#10'    lLine.StrictDelimiter := True;'#13#10'    if pList.Count = 0 then'
-  +#13#10'      exit;'#13#10'    for i := 0 to pList.Count - 1 do begin'#13#10
-  +'      lLine.DelimitedText := pList[i];'#13#10'      if lLine.Count >= 4 the'
-  +'n begin'#13#10'        Add(TLPPasClass.Create(lLine[0], lLine[1], lLine[2])'
-  +');'#13#10'        Last.Expanded := StrToBool(lLine[3]);'#13#10'      end;'
-  +#13#10'    end;'#13#10'  finally'#13#10'    lLine.Free;'#13#10'  end;'#13#10
-  +'end;'#13#10#13#10#13#10'{ TLPPasClass }'#13#10#13#10'procedure TLPPasClass.'
-  +'SetNameOfClass(pNameOfClass: String);'#13#10'begin'#13#10'  if fNameOfClass'
-  +' = pNameOfClass then Exit;'#13#10'  fNameOfClass := pNameOfClass;'#13#10'  '
-  +'fNameOfClassUp := UpperCase(pNameOfClass);'#13#10'end;'#13#10#13#10'constru'
-  +'ctor TLPPasClass.Create(pNameOfClass, pUnitName, pFileName: String);'#13#10
-  +'begin'#13#10'  inherited Create(pUnitName, pFileName);'#13#10'  fNameOfClas'
-  +'s := pNameOfClass;'#13#10'  fNameOfClassUp := UpperCase(pNameOfClass);'#13
-  +#10'end;'#13#10#13#10#13#10'{ TLPPasUnit }'#13#10#13#10'procedure TLPPasUnit'
-  +'.SetFileName(pFileName: string);'#13#10'begin'#13#10'  if fFileName = pFile'
-  +'Name then Exit;'#13#10'  fFileName := pFileName;'#13#10'  fFileNameUp := Up'
-  +'perCase(pFileName);'#13#10'end;'#13#10#13#10'procedure TLPPasUnit.SetUnitNa'
-  +'me(pUnitName: String);'#13#10'begin'#13#10'  if fUnitName = pUnitName then '
-  +'Exit;'#13#10'  fUnitName := pUnitName;'#13#10'  fUnitNameUp := UpperCase(pU'
-  +'nitName);'#13#10'end;'#13#10#13#10'constructor TLPPasUnit.Create(pUnitName,'
-  +' pFileName: String);'#13#10'begin'#13#10'  fUnitName := pUnitName;'#13#10' '
-  +' fUnitNameUp := UpperCase(pUnitName);'#13#10'  fFileName := pFileName;'#13
-  +#10'  fFileNameUp := UpperCase(pFileName);'#13#10'end;'#13#10#13#10#13#10'{ '
-  +'TCustomLazProfiler }'#13#10#13#10'procedure TCustomLazProfiler.SaveToFile(p'
-  +'FileName: String);'#13#10'var'#13#10'  lFile,'#13#10'  lLine: TStringList;'
-  +#13#10'  i: Integer;'#13#10'begin'#13#10'  lFile := TStringList.Create;'#13
-  +#10'  lLine := TStringList.Create;'#13#10'  try'#13#10'    // header'#13#10
-  +'    lLine.Delimiter := '';'';'#13#10'    lLine.StrictDelimiter := True;'#13
-  +#10'    lLine.Clear;'#13#10'    lLine.Add(IntToStr(cSettingVersion));'#13#10
-  +'    lLine.Add(ifthen(fAutoStart, ''AutoStart'', ''''));'#13#10'    lLine.Ad'
-  +'d(ifthen(fNeedsRebuild, ''NeedsRebuild'', ''''));'#13#10'    lLine.Add(IntT'
-  +'oStr(fSortColumn));'#13#10'    lLine.Add(IntToStr(fSortDirection));'#13#10
-  ,'    lLine.Add(IntToStr(fUnitList.Count));'#13#10'    lLine.Add(IntToStr(fCl'
-  +'assList.Count));'#13#10'    lLine.Add(IntToStr(fProcList.Count));'#13#10'  '
-  +'  lFile.Add(lLine.DelimitedText);'#13#10'    // units'#13#10'    fUnitList.'
-  +'SaveToStringList(lFile);'#13#10'    // classes'#13#10'    fClassList.SaveTo'
-  +'StringList(lFile);'#13#10'    // procs'#13#10'    fProcList.SaveToStringLis'
-  +'t(lFile);'#13#10'    lFile.SaveToFile(pFileName);'#13#10'  finally'#13#10' '
-  +'   lLine.Free;'#13#10'    lFile.Free;'#13#10'  end;'#13#10'end;'#13#10#13#10
-  +'function TCustomLazProfiler.LoadFromFile(pFileName: String): Boolean;'#13#10
-  +'var'#13#10'  lFile, lLine, lTemp: TStringList;'#13#10'  lVersion, lUnitCoun'
-  +'t, lClassCount, lProcCount: LongInt;'#13#10'  lPasClass: TLPPasClass;'#13#10
-  +'  lPasUnit: TLPPasUnit;'#13#10'  lPasProc: TLPPasProc;'#13#10'  i, j, p: In'
-  +'teger;'#13#10'begin'#13#10'  DebugLn(''*** LazProfiler: LoadFromFile: ''+pF'
-  +'ileName);'#13#10'  if not FileExists(pFileName) then'#13#10'    Exit(False)'
-  +';'#13#10'  Result := True;'#13#10'  lFile := TStringList.Create;'#13#10'  l'
-  +'Line := TStringList.Create;'#13#10'  lTemp := TStringList.Create;'#13#10'  '
-  +'fProcList.Clear;'#13#10'  try'#13#10'    lFile.LoadFromFile(pFileName);'#13
-  +#10'    if lFile.Count >= 1 then begin'#13#10'      lLine.Delimiter := '';'''
-  +';'#13#10'      lLine.StrictDelimiter := True;'#13#10'      lLine.DelimitedT'
-  +'ext := lFile[0];'#13#10'      if lLine.Count >= 3 then begin'#13#10'       '
-  +' lVersion := StrToInt(lLine[0]);'#13#10'        If UpperCase(lLine[1]) = '''
-  +'AUTOSTART'' then'#13#10'          fAutoStart := True;'#13#10'        If Upp'
-  +'erCase(lLine[2]) = ''NEEDSREBUILD'' then'#13#10'          fNeedsRebuild := '
-  +'True;'#13#10'        if lVersion > 1 then begin'#13#10'          fSortColum'
-  +'n := StrToInt(lLine[3]);'#13#10'          fSortDirection := StrToInt(lLine['
-  +'4]);'#13#10'          lUnitCount := StrToInt(lLine[5]);'#13#10'          lC'
-  +'lassCount := StrToInt(lLine[6]);'#13#10'          lProcCount := StrToInt(lL'
-  +'ine[7]);'#13#10'        end;'#13#10'      end else'#13#10'        Exit;'#13
-  +#10'      lFile.Delete(0);'#13#10'      if lVersion = 1 then begin'#13#10'  '
-  +'      if lFile.Count > 0 then'#13#10'          fProcList.LoadFromStringList'
-  +'(lFile, lVersion);'#13#10'      end else begin'#13#10'        p := 0;'#13#10
-  +'        if lUnitCount > 0 then begin;'#13#10'          lTemp.Clear;'#13#10
-  +'          for i := 0 to lUnitCount - 1 do begin'#13#10'            lTemp.Ad'
-  +'d(lFile[p]);'#13#10'            inc(p);'#13#10'          end;'#13#10'      '
-  +'    fUnitList.LoadFromStringList(lTemp, lVersion);'#13#10'        end;'#13
-  +#10'        if lClassCount > 0 then begin;'#13#10'          lTemp.Clear;'#13
-  +#10'          for i := 0 to lClassCount - 1 do begin'#13#10'            lTem'
-  +'p.Add(lFile[p]);'#13#10'            inc(p);'#13#10'          end;'#13#10'  '
-  +'        fClassList.LoadFromStringList(lTemp, lVersion);'#13#10'        end;'
-  +#13#10'        if lProcCount > 0 then begin;'#13#10'          lTemp.Clear;'
-  +#13#10'          for i := 0 to lProcCount - 1 do begin'#13#10'            lT'
-  +'emp.Add(lFile[p]);'#13#10'            inc(p);'#13#10'          end;'#13#10
-  +'          fProcList.LoadFromStringList(lTemp, lVersion);'#13#10'        end'
-  +';'#13#10'      end;'#13#10'      for i := 0 to fProcList.Count - 1 do begin'
-  +#13#10'        lPasProc := fProcList[i];'#13#10'        // search unit'#13#10
-  +'        j := fUnitList.IndexOf(lPasProc.UnitName, lPasProc.FileName);'#13#10
+  +'ils;'#13#10#13#10'{ TLPPasUnitList }'#13#10#13#10'function TLPPasUnitList.I'
+  +'ndexOf(pUnitName, pFileName: String): SizeInt;'#13#10'var'#13#10'  i: Integ'
+  +'er;'#13#10'  lPasUnit: TLPPasUnit;'#13#10'begin'#13#10'  pUnitName := Upper'
+  +'Case(pUnitName);'#13#10'  pFileName := UpperCase(pFileName);'#13#10'  for i'
+  +' := 0 to Count - 1 do begin'#13#10'    lPasUnit := Items[i];'#13#10'    if '
+  +'(lPasUnit.UnitNameUp = pUnitName)'#13#10'    and (lPasUnit.FileNameUp = pFi'
+  +'leName) then'#13#10'      Exit(i);'#13#10'  end;'#13#10'  Result := -1;'#13
+  +#10'end;'#13#10#13#10'procedure TLPPasUnitList.SaveToStringList(pList: TStri'
+  +'ngList);'#13#10'var'#13#10'  lLine: TStringList;'#13#10'  i: Integer;'#13#10
+  +'begin'#13#10'  lLine := TStringList.Create;'#13#10'  try'#13#10'    lLine.D'
+  +'elimiter := '';'';'#13#10'    lLine.StrictDelimiter := True;'#13#10'    for'
+  +' i := 0 to Count - 1 do begin'#13#10'      lLine.Clear;'#13#10'      lLine.'
+  +'Add(Items[i].UnitName);'#13#10'      lLine.Add(Items[i].FileName);'#13#10' '
+  +'     lLine.Add(BoolToStr(Items[i].Expanded, True));'#13#10'      pList.Add('
+  ,'lLine.DelimitedText);'#13#10'    end;'#13#10'  finally'#13#10'    lLine.Fre'
+  +'e;'#13#10'  end;'#13#10'end;'#13#10#13#10'procedure TLPPasUnitList.LoadFrom'
+  +'StringList(pList: TStringList; pVersion: Integer);'#13#10'var'#13#10'  lLin'
+  +'e: TStringList;'#13#10'  i: Integer;'#13#10'begin'#13#10'  lLine := TString'
+  +'List.Create;'#13#10'  try'#13#10'    lLine.Delimiter := '';'';'#13#10'    l'
+  +'Line.StrictDelimiter := True;'#13#10'    if pList.Count = 0 then'#13#10'   '
+  +'   exit;'#13#10'    for i := 0 to pList.Count - 1 do begin'#13#10'      lLi'
+  +'ne.DelimitedText := pList[i];'#13#10'      if lLine.Count >= 3 then begin'
+  +#13#10'        Add(TLPPasUnit.Create(lLine[0], lLine[1]));'#13#10'        La'
+  +'st.Expanded := StrToBool(lLine[2]);'#13#10'      end;'#13#10'    end;'#13#10
+  +'  finally'#13#10'    lLine.Free;'#13#10'  end;'#13#10'end;'#13#10#13#10#13
+  +#10'{ TLPPasClassList }'#13#10#13#10'function TLPPasClassList.IndexOf(pNameO'
+  +'fClass, pUnitName, pFileName: String): SizeInt;'#13#10'var'#13#10'  i: Inte'
+  +'ger;'#13#10'  lPasClass: TLPPasClass;'#13#10'begin'#13#10'  pNameOfClass :='
+  +' UpperCase(pNameOfClass);'#13#10'  pUnitName := UpperCase(pUnitName);'#13#10
+  +'  pFileName := UpperCase(pFileName);'#13#10'  for i := 0 to Count - 1 do be'
+  +'gin'#13#10'    lPasClass := Items[i];'#13#10'    if (lPasClass.fNameOfClass'
+  +'Up = pNameOfClass)'#13#10'    and (lPasClass.fUnitNameUp = pUnitName)'#13#10
+  +'    and (lPasClass.fFileNameUp = pFileName) then'#13#10'      Exit(i);'#13
+  +#10'  end;'#13#10'  Result := -1;'#13#10'end;'#13#10#13#10'procedure TLPPasC'
+  +'lassList.SaveToStringList(pList: TStringList);'#13#10'var'#13#10'  lLine: T'
+  +'StringList;'#13#10'  i: Integer;'#13#10'begin'#13#10'  lLine := TStringList'
+  +'.Create;'#13#10'  try'#13#10'    lLine.Delimiter := '';'';'#13#10'    lLine'
+  +'.StrictDelimiter := True;'#13#10'    for i := 0 to Count - 1 do begin'#13#10
+  +'      lLine.Clear;'#13#10'      lLine.Add(Items[i].NameOfClass);'#13#10'   '
+  +'   lLine.Add(Items[i].UnitName);'#13#10'      lLine.Add(Items[i].FileName);'
+  +#13#10'      lLine.Add(BoolToStr(Items[i].Expanded, True));'#13#10'      pLi'
+  +'st.Add(lLine.DelimitedText);'#13#10'    end;'#13#10'  finally'#13#10'    lL'
+  +'ine.Free;'#13#10'  end;'#13#10'end;'#13#10#13#10'procedure TLPPasClassList.'
+  +'LoadFromStringList(pList: TStringList; pVersion: Integer);'#13#10'var'#13#10
+  +'  lLine: TStringList;'#13#10'  i: Integer;'#13#10'begin'#13#10'  lLine := T'
+  +'StringList.Create;'#13#10'  try'#13#10'    lLine.Delimiter := '';'';'#13#10
+  +'    lLine.StrictDelimiter := True;'#13#10'    if pList.Count = 0 then'#13#10
+  +'      exit;'#13#10'    for i := 0 to pList.Count - 1 do begin'#13#10'      '
+  +'lLine.DelimitedText := pList[i];'#13#10'      if lLine.Count >= 4 then begi'
+  +'n'#13#10'        Add(TLPPasClass.Create(lLine[0], lLine[1], lLine[2]));'#13
+  +#10'        Last.Expanded := StrToBool(lLine[3]);'#13#10'      end;'#13#10' '
+  +'   end;'#13#10'  finally'#13#10'    lLine.Free;'#13#10'  end;'#13#10'end;'
+  +#13#10#13#10#13#10'{ TLPPasClass }'#13#10#13#10'procedure TLPPasClass.SetNam'
+  +'eOfClass(pNameOfClass: String);'#13#10'begin'#13#10'  if fNameOfClass = pNa'
+  +'meOfClass then Exit;'#13#10'  fNameOfClass := pNameOfClass;'#13#10'  fNameO'
+  +'fClassUp := UpperCase(pNameOfClass);'#13#10'end;'#13#10#13#10'constructor T'
+  +'LPPasClass.Create(pNameOfClass, pUnitName, pFileName: String);'#13#10'begin'
+  +#13#10'  inherited Create(pUnitName, pFileName);'#13#10'  fNameOfClass := pN'
+  +'ameOfClass;'#13#10'  fNameOfClassUp := UpperCase(pNameOfClass);'#13#10'end;'
+  +#13#10#13#10#13#10'{ TLPPasUnit }'#13#10#13#10'procedure TLPPasUnit.SetFileN'
+  +'ame(pFileName: string);'#13#10'begin'#13#10'  if fFileName = pFileName then'
+  +' Exit;'#13#10'  fFileName := pFileName;'#13#10'  fFileNameUp := UpperCase(p'
+  +'FileName);'#13#10'end;'#13#10#13#10'procedure TLPPasUnit.SetUnitName(pUnitN'
+  +'ame: String);'#13#10'begin'#13#10'  if fUnitName = pUnitName then Exit;'#13
+  +#10'  fUnitName := pUnitName;'#13#10'  fUnitNameUp := UpperCase(pUnitName);'
+  +#13#10'end;'#13#10#13#10'constructor TLPPasUnit.Create(pUnitName, pFileName:'
+  +' String);'#13#10'begin'#13#10'  fUnitName := pUnitName;'#13#10'  fUnitNameU'
+  +'p := UpperCase(pUnitName);'#13#10'  fFileName := pFileName;'#13#10'  fFileN'
+  +'ameUp := UpperCase(pFileName);'#13#10'end;'#13#10#13#10#13#10'{ TCustomLazP'
+  +'rofiler }'#13#10#13#10'procedure TCustomLazProfiler.SaveToFile(pFileName: S'
+  +'tring);'#13#10'var'#13#10'  lFile,'#13#10'  lLine: TStringList;'#13#10'  i:'
+  +' Integer;'#13#10'begin'#13#10'  lFile := TStringList.Create;'#13#10'  lLine'
+  +' := TStringList.Create;'#13#10'  try'#13#10'    // header'#13#10'    lLine.'
+  +'Delimiter := '';'';'#13#10'    lLine.StrictDelimiter := True;'#13#10'    lL'
+  +'ine.Clear;'#13#10'    lLine.Add(IntToStr(cSettingVersion));'#13#10'    lLin'
+  +'e.Add(ifthen(fAutoStart, ''AutoStart'', ''''));'#13#10'    lLine.Add(ifthen'
+  +'(fNeedsRebuild, ''NeedsRebuild'', ''''));'#13#10'    lLine.Add(IntToStr(fSo'
+  +'rtColumn));'#13#10'    lLine.Add(IntToStr(fSortDirection));'#13#10'    lLin'
+  ,'e.Add(IntToStr(fUnitList.Count));'#13#10'    lLine.Add(IntToStr(fClassList.'
+  +'Count));'#13#10'    lLine.Add(IntToStr(fProcList.Count));'#13#10'    lFile.'
+  +'Add(lLine.DelimitedText);'#13#10'    // units'#13#10'    fUnitList.SaveToSt'
+  +'ringList(lFile);'#13#10'    // classes'#13#10'    fClassList.SaveToStringLi'
+  +'st(lFile);'#13#10'    // procs'#13#10'    fProcList.SaveToStringList(lFile)'
+  +';'#13#10'    lFile.SaveToFile(pFileName);'#13#10'  finally'#13#10'    lLine'
+  +'.Free;'#13#10'    lFile.Free;'#13#10'  end;'#13#10'end;'#13#10#13#10'functi'
+  +'on TCustomLazProfiler.LoadFromFile(pFileName: String): Boolean;'#13#10'var'
+  +#13#10'  lFile, lLine, lTemp: TStringList;'#13#10'  lVersion, lUnitCount, lC'
+  +'lassCount, lProcCount: LongInt;'#13#10'  lPasClass: TLPPasClass;'#13#10'  l'
+  +'PasUnit: TLPPasUnit;'#13#10'  lPasProc: TLPPasProc;'#13#10'  i, j, p: Integ'
+  +'er;'#13#10'begin'#13#10'  DebugLn(''*** LazProfiler: LoadFromFile: ''+pFile'
+  +'Name);'#13#10'  if not FileExists(pFileName) then'#13#10'    Exit(False);'
+  +#13#10'  Result := True;'#13#10'  lFile := TStringList.Create;'#13#10'  lLin'
+  +'e := TStringList.Create;'#13#10'  lTemp := TStringList.Create;'#13#10'  fPr'
+  +'ocList.Clear;'#13#10'  try'#13#10'    lFile.LoadFromFile(pFileName);'#13#10
+  +'    if lFile.Count >= 1 then begin'#13#10'      lLine.Delimiter := '';'';'
+  +#13#10'      lLine.StrictDelimiter := True;'#13#10'      lLine.DelimitedText'
+  +' := lFile[0];'#13#10'      if lLine.Count >= 3 then begin'#13#10'        lV'
+  +'ersion := StrToInt(lLine[0]);'#13#10'        If UpperCase(lLine[1]) = ''AUT'
+  +'OSTART'' then'#13#10'          fAutoStart := True;'#13#10'        If UpperC'
+  +'ase(lLine[2]) = ''NEEDSREBUILD'' then'#13#10'          fNeedsRebuild := Tru'
+  +'e;'#13#10'        if lVersion > 1 then begin'#13#10'          fSortColumn :'
+  +'= StrToInt(lLine[3]);'#13#10'          fSortDirection := StrToInt(lLine[4])'
+  +';'#13#10'          lUnitCount := StrToInt(lLine[5]);'#13#10'          lClas'
+  +'sCount := StrToInt(lLine[6]);'#13#10'          lProcCount := StrToInt(lLine'
+  +'[7]);'#13#10'        end;'#13#10'      end else'#13#10'        Exit;'#13#10
+  +'      lFile.Delete(0);'#13#10'      if lVersion = 1 then begin'#13#10'     '
+  +'   if lFile.Count > 0 then'#13#10'          fProcList.LoadFromStringList(lF'
+  +'ile, lVersion);'#13#10'      end else begin'#13#10'        p := 0;'#13#10' '
+  +'       if lUnitCount > 0 then begin;'#13#10'          lTemp.Clear;'#13#10' '
+  +'         for i := 0 to lUnitCount - 1 do begin'#13#10'            lTemp.Add'
+  +'(lFile[p]);'#13#10'            inc(p);'#13#10'          end;'#13#10'       '
+  +'   fUnitList.LoadFromStringList(lTemp, lVersion);'#13#10'        end;'#13#10
+  +'        if lClassCount > 0 then begin;'#13#10'          lTemp.Clear;'#13#10
+  +'          for i := 0 to lClassCount - 1 do begin'#13#10'            lTemp.A'
+  +'dd(lFile[p]);'#13#10'            inc(p);'#13#10'          end;'#13#10'     '
+  +'     fClassList.LoadFromStringList(lTemp, lVersion);'#13#10'        end;'#13
+  +#10'        if lProcCount > 0 then begin;'#13#10'          lTemp.Clear;'#13
+  +#10'          for i := 0 to lProcCount - 1 do begin'#13#10'            lTemp'
+  +'.Add(lFile[p]);'#13#10'            inc(p);'#13#10'          end;'#13#10'   '
+  +'       fProcList.LoadFromStringList(lTemp, lVersion);'#13#10'        end;'
+  +#13#10'      end;'#13#10'      for i := 0 to fProcList.Count - 1 do begin'#13
+  +#10'        lPasProc := fProcList[i];'#13#10'        // search unit'#13#10' '
+  +'       j := fUnitList.IndexOf(lPasProc.UnitName, lPasProc.FileName);'#13#10
   +'        if j >= 0 then begin'#13#10'          lPasUnit := fUnitList[j]'#13
   +#10'        end else begin'#13#10'          lPasUnit := TLPPasUnit.Create(lP'
   +'asProc.UnitName, lPasProc.FileName);'#13#10'          fUnitList.Add(lPasUni'
@@ -365,101 +365,101 @@ LazarusResources.Add('core','PAS',[
   +'filing(pProcID: Integer);'#13#10'var'#13#10'  lTimeStamp: TickType;'#13#10
   +'  lCurStackFrame: TLPStackFrame;'#13#10'  lIdx: Integer;'#13#10'begin'#13#10
   +'  lTimeStamp := Ticks();'#13#10'  Lock;'#13#10'  try'#13#10'    if pProcID '
-  +'>= fProcList.Count then begin'#13#10'      ShowMessage(''TLazProfiler.Enter'
+  +'>= fProcList.Count then begin'#13#10'      WriteLn(''TLazProfiler.EnterProf'
+  +'iling: pProcID >= fProcList.Count: ''+IntToStr(pProcID)+''>=''+IntToStr(fPr'
+  +'ocList.Count));'#13#10'      Exit;'#13#10'    end;'#13#10'    lIdx := Threa'
+  +'dIndex(ThreadID);'#13#10'    lCurStackFrame := fCurStackFrame[lIdx];'#13#10
+  +'    lCurStackFrame := TLPStackFrame.Create(fProcList[pProcID], lCurStackFra'
+  +'me);'#13#10'    fCurStackFrame[lIdx] := lCurStackFrame;'#13#10'    lCurStac'
+  +'kFrame.fRunning := fRunning;'#13#10'    lCurStackFrame.fTicksInit := lTimeS'
+  +'tamp;'#13#10'  finally'#13#10'    UnLock;'#13#10'  end;'#13#10'  lCurStackF'
+  +'rame.fTicksStart := Ticks();'#13#10'end;'#13#10#13#10'procedure TLazProfile'
+  +'r.ExitProfiling(pProcID: Integer);'#13#10'var'#13#10'  lTimeStamp: TickType'
+  +';'#13#10'  lCurStackFrame: TLPStackFrame;'#13#10'  lIdx: Integer;'#13#10'be'
+  +'gin'#13#10'  lTimeStamp := Ticks();'#13#10'  Lock;'#13#10'  try'#13#10'    '
+  +'lIdx := ThreadIndex(ThreadID);'#13#10'    lCurStackFrame := fCurStackFrame['
+  +'lIdx];'#13#10'    lCurStackFrame.fTicksEnd := lTimeStamp;'#13#10'    if pPr'
+  +'ocID >= fProcList.Count then begin'#13#10'      WriteLn(''TLazProfiler.Exit'
   +'Profiling: pProcID >= fProcList.Count: ''+IntToStr(pProcID)+''>=''+IntToStr'
-  +'(fProcList.Count));'#13#10'      Exit;'#13#10'    end;'#13#10'    lIdx := T'
-  +'hreadIndex(ThreadID);'#13#10'    lCurStackFrame := fCurStackFrame[lIdx];'#13
-  +#10'    lCurStackFrame := TLPStackFrame.Create(fProcList[pProcID], lCurStack'
-  +'Frame);'#13#10'    fCurStackFrame[lIdx] := lCurStackFrame;'#13#10'    lCurS'
-  +'tackFrame.fRunning := fRunning;'#13#10'    lCurStackFrame.fTicksInit := lTi'
-  +'meStamp;'#13#10'  finally'#13#10'    UnLock;'#13#10'  end;'#13#10'  lCurSta'
-  +'ckFrame.fTicksStart := Ticks();'#13#10'end;'#13#10#13#10'procedure TLazProf'
-  +'iler.ExitProfiling(pProcID: Integer);'#13#10'var'#13#10'  lTimeStamp: TickT'
-  +'ype;'#13#10'  lCurStackFrame: TLPStackFrame;'#13#10'  lIdx: Integer;'#13#10
-  +'begin'#13#10'  lTimeStamp := Ticks();'#13#10'  Lock;'#13#10'  try'#13#10'  '
-  +'  lIdx := ThreadIndex(ThreadID);'#13#10'    lCurStackFrame := fCurStackFram'
-  +'e[lIdx];'#13#10'    lCurStackFrame.fTicksEnd := lTimeStamp;'#13#10'    if p'
-  +'ProcID >= fProcList.Count then begin'#13#10'      ShowMessage(''TLazProfile'
-  +'r.ExitProfiling: pProcID >= fProcList.Count: ''+IntToStr(pProcID)+''>=''+In'
-  +'tToStr(fProcList.Count));'#13#10'      Exit;'#13#10'    end;'#13#10'    if '
-  +'lCurStackFrame.fPasProc <> fProcList[pProcID] then'#13#10'      ShowMessage'
-  +'(''TLazProfiler.ExitProfiling: Stack mismatch: ''+lCurStackFrame.fPasProc.N'
-  +'ame+''<->''+fProcList[pProcID].name);'#13#10'    lCurStackFrame.fOff := Off'
-  +'Ticks;'#13#10'    lCurStackFrame.CleanupChilds;'#13#10'    fCurStackFrame[l'
-  +'Idx] := lCurStackFrame.fParent;'#13#10'  finally'#13#10'    UnLock;'#13#10
-  +'  end;'#13#10'  lCurStackFrame.fTicksExit := Ticks();'#13#10'end;'#13#10#13
-  +#10'procedure TLazProfiler.StartProfiling;'#13#10'begin'#13#10'  fRunning :='
-  +' True;'#13#10'  DebugLn(''### LazProfiler: Start'');'#13#10'end;'#13#10#13
-  +#10'procedure TLazProfiler.PauseProfiling;'#13#10'begin'#13#10'  if fPauseCo'
-  +'unt = 0 then'#13#10'    fPauseStartTicks := Ticks();'#13#10'  inc(fPauseCou'
-  +'nt);'#13#10'end;'#13#10#13#10'procedure TLazProfiler.ContinueProfiling;'#13
-  +#10'begin'#13#10'  dec(fPauseCount);'#13#10'  if fRunning then begin'#13#10
-  +'    if fPauseCount = 0 then begin'#13#10'      if fPauseStartTicks <> 0 the'
-  +'n'#13#10'        fOffTicks := fOffTicks + (Ticks() - fPauseStartTicks)'#13
-  +#10'      else'#13#10'        fOffTicks := 0;'#13#10'      fPauseStartTicks '
-  +':= 0;'#13#10'    end;'#13#10'  end else begin'#13#10'    fOffTicks := 0;'#13
-  ,#10'    fPauseStartTicks := 0;'#13#10'  end;'#13#10'end;'#13#10#13#10'proced'
-  +'ure TLazProfiler.StopProfiling;'#13#10'begin'#13#10'  fRunning := False;'#13
-  +#10'  DebugLn(''### LazProfiler: Stop'');'#13#10'end;'#13#10#13#10'construct'
-  +'or TLazProfiler.Create(pProgramm: String);'#13#10'var'#13#10'  lCurStackFra'
-  +'me: TLPStackFrame;'#13#10'begin'#13#10'  inherited Create;'#13#10'  InitCri'
-  +'ticalSection(fLock);'#13#10'  fName := AppendPathDelim(ExtractFileDir(pProg'
-  +'ramm))+ExtractFileNameOnly(pProgramm);'#13#10'  fTimer := TEpikTimer.Create'
-  +'(nil);'#13#10'  if fTimer.HWCapabilityDataAvailable and fTimer.HWTickSuppor'
-  +'tAvailable then begin'#13#10'    Ticks := @HWTicks;'#13#10'    fTicks := fT'
-  +'imer.HWTimebase.TicksFrequency;'#13#10'    DebugLn(''### LazProfiler: HWTic'
-  +'ks used. Freq=''+IntToStr(fTicks));'#13#10'  end else begin'#13#10'    Tick'
-  +'s := @SysTicks;'#13#10'    fTicks := fTimer.SysTimebase.TicksFrequency;'#13
-  +#10'    DebugLn(''### LazProfiler: SysTicks used. Freq=''+IntToStr(fTicks));'
-  +#13#10'  end;'#13#10'  fMasterProc := TLPPasProc.Create(''Master'', 0, '''','
-  +' '''', '''', -1);'#13#10'  fOffTicks := 0;'#13#10'  fThreads := TList.Creat'
-  +'e;'#13#10'  lCurStackFrame := TLPStackFrame.Create(fMasterProc, nil);'#13#10
-  +'  lCurStackFrame.fTicksInit := Ticks();'#13#10'  lCurStackFrame.fTicksStart'
-  +' := lCurStackFrame.fTicksInit;'#13#10'  SetLength(fCurStackFrame, 100);'#13
-  +#10'  fCurStackFrame[fThreads.Add(Pointer(ThreadID))] := lCurStackFrame;'#13
-  +#10'  fLoaded := LoadFromFile(fName+cSettingExtension);'#13#10'  fRunning :='
-  +' fAutoStart;'#13#10'end;'#13#10#13#10'destructor TLazProfiler.Destroy;'#13
-  +#10'var'#13#10'  i: Integer;'#13#10'  lCurStackFrame: TLPStackFrame;'#13#10
-  +'begin'#13#10'  fMasterProc.Free;'#13#10'  for i := 0 to fThreads.Count - 1 '
-  +'do begin'#13#10'    lCurStackFrame := fCurStackFrame[i];'#13#10'    lCurSta'
-  +'ckFrame.fTicksEnd := Ticks();'#13#10'    lCurStackFrame.fTicksExit := lCurS'
-  +'tackFrame.fTicksEnd;'#13#10'    lCurStackFrame.Calc;'#13#10'    lCurStackFr'
-  +'ame.Free;'#13#10'  end;'#13#10'  { calc percentages }'#13#10#13#10'  { free'
-  +' resources }'#13#10'  fThreads.Free;'#13#10'  SetLength(fCurStackFrame, 0);'
-  +#13#10'  fTimer.Free;'#13#10'  if fTicks > 0 then'#13#10'    fProcList.Conve'
-  +'rt(fTicks)'#13#10'  else'#13#10'    DebugLn(''***** LazProfiler: fTicks=''+'
-  +'IntToStr(fTicks));'#13#10'  if fLoaded then'#13#10'    SaveToFile(fName+cSe'
-  +'ttingExtension);'#13#10'  DoneCriticalSection(fLock);'#13#10'  inherited De'
-  +'stroy;'#13#10'end;'#13#10#13#10#13#10'{ TLPPasProc }'#13#10#13#10'procedure'
-  +' TLPPasProc.Init;'#13#10'begin'#13#10'  fCount := 0;'#13#10'  fNet := 0;'#13
-  +#10'  fGross := 0;'#13#10'end;'#13#10#13#10'procedure TLPPasProc.SetFileName'
-  +'(pFileName: String);'#13#10'begin'#13#10'  if fFileName = pFileName then Ex'
-  +'it;'#13#10'  fFileName := pFileName;'#13#10'  fFileNameUp := UpperCase(fFil'
-  +'eName);'#13#10'end;'#13#10#13#10'procedure TLPPasProc.SetName(pName: String'
-  +');'#13#10'begin'#13#10'  if fName = pName then Exit;'#13#10'  fName := pNam'
-  +'e;'#13#10'  fNameUp := UpperCase(pName);'#13#10'end;'#13#10#13#10'construct'
-  +'or TLPPasProc.Create(pName: String; pKind: Integer; pNameOfClass, pUnitName'
-  +', pFileName: String; pRow: Integer);'#13#10'begin'#13#10'  inherited Create'
-  +'(pNameOfClass, pUnitName, pFileName);'#13#10'  fName := pName;'#13#10'  fNa'
-  +'meUp := UpperCase(pName);'#13#10'  fRow := pRow;'#13#10'  fInstrument := Tr'
-  +'ue;'#13#10'  fKind := pKind;'#13#10'  Init;'#13#10'end;'#13#10#13#10'destru'
-  +'ctor TLPPasProc.Destroy;'#13#10'begin'#13#10'  fCalls.Free;'#13#10'  fCalle'
-  +'dBy.Free;'#13#10'  fCallsCount.Free;'#13#10'  fCalledByCount.Free;'#13#10' '
-  +' inherited Destroy;'#13#10'end;'#13#10#13#10'procedure TLPPasProc.Calls(pPr'
-  +'oc: TLPPasProc);'#13#10'var'#13#10'  i: SizeInt;'#13#10'begin'#13#10'  if n'
-  +'ot Assigned(fCalls) then begin'#13#10'    fCalls := TLPPasProcList.Create(F'
-  +'alse);'#13#10'    fCallsCount := TIntegerList.Create;'#13#10'  end;'#13#10
-  +'  i := fCalls.IndexOf(pProc);'#13#10'  if i = -1 then begin'#13#10'    fCal'
-  +'ls.Add(pProc);'#13#10'    fCallsCount.Add(1);'#13#10'  end else begin'#13#10
-  +'    fCallsCount[i] := fCallsCount[i] + 1;'#13#10'  end;'#13#10'end;'#13#10
-  +#13#10'procedure TLPPasProc.CalledBy(pProc: TLPPasProc);'#13#10'var'#13#10' '
-  +' i: SizeInt;'#13#10'begin'#13#10'  if not Assigned(fCalledBy) then begin'#13
-  +#10'    fCalledBy := TLPPasProcList.Create(False);'#13#10'    fCalledByCount'
-  +' := TIntegerList.Create;'#13#10'  end;'#13#10'  i := fCalledBy.IndexOf(pPro'
-  +'c);'#13#10'  if i = -1 then begin'#13#10'    fCalledBy.Add(pProc);'#13#10' '
-  +'   fCalledByCount.Add(1);'#13#10'  end else begin'#13#10'    fCalledByCount'
-  +'[i] := fCalledByCount[i] + 1;'#13#10'  end;'#13#10'end;'#13#10#13#10'end.'
-  +#13#10#13#10
+  +'(fProcList.Count));'#13#10'      Exit;'#13#10'    end;'#13#10'    if lCurSt'
+  +'ackFrame.fPasProc <> fProcList[pProcID] then'#13#10'      WriteLn(''TLazPro'
+  +'filer.ExitProfiling: Stack mismatch: ''+lCurStackFrame.fPasProc.Name+''<->'
+  +'''+fProcList[pProcID].name);'#13#10'    lCurStackFrame.fOff := OffTicks;'#13
+  +#10'    lCurStackFrame.CleanupChilds;'#13#10'    fCurStackFrame[lIdx] := lCu'
+  +'rStackFrame.fParent;'#13#10'  finally'#13#10'    UnLock;'#13#10'  end;'#13
+  +#10'  lCurStackFrame.fTicksExit := Ticks();'#13#10'end;'#13#10#13#10'procedu'
+  +'re TLazProfiler.StartProfiling;'#13#10'begin'#13#10'  fRunning := True;'#13
+  +#10'  DebugLn(''### LazProfiler: Start'');'#13#10'end;'#13#10#13#10'procedur'
+  +'e TLazProfiler.PauseProfiling;'#13#10'begin'#13#10'  if fPauseCount = 0 the'
+  +'n'#13#10'    fPauseStartTicks := Ticks();'#13#10'  inc(fPauseCount);'#13#10
+  +'end;'#13#10#13#10'procedure TLazProfiler.ContinueProfiling;'#13#10'begin'#13
+  +#10'  dec(fPauseCount);'#13#10'  if fRunning then begin'#13#10'    if fPause'
+  +'Count = 0 then begin'#13#10'      if fPauseStartTicks <> 0 then'#13#10'    '
+  +'    fOffTicks := fOffTicks + (Ticks() - fPauseStartTicks)'#13#10'      else'
+  +#13#10'        fOffTicks := 0;'#13#10'      fPauseStartTicks := 0;'#13#10'  '
+  +'  end;'#13#10'  end else begin'#13#10'    fOffTicks := 0;'#13#10'    fPause'
+  ,'StartTicks := 0;'#13#10'  end;'#13#10'end;'#13#10#13#10'procedure TLazProfi'
+  +'ler.StopProfiling;'#13#10'begin'#13#10'  fRunning := False;'#13#10'  DebugL'
+  +'n(''### LazProfiler: Stop'');'#13#10'end;'#13#10#13#10'constructor TLazProf'
+  +'iler.Create(pProgramm: String);'#13#10'var'#13#10'  lCurStackFrame: TLPStac'
+  +'kFrame;'#13#10'begin'#13#10'  inherited Create;'#13#10'  InitCriticalSectio'
+  +'n(fLock);'#13#10'  fName := AppendPathDelim(ExtractFileDir(pProgramm))+Extr'
+  +'actFileNameOnly(pProgramm);'#13#10'  fTimer := TEpikTimer.Create(nil);'#13
+  +#10'  if fTimer.HWCapabilityDataAvailable and fTimer.HWTickSupportAvailable '
+  +'then begin'#13#10'    Ticks := @HWTicks;'#13#10'    fTicks := fTimer.HWTime'
+  +'base.TicksFrequency;'#13#10'    DebugLn(''### LazProfiler: HWTicks used. Fr'
+  +'eq=''+IntToStr(fTicks));'#13#10'  end else begin'#13#10'    Ticks := @SysTi'
+  +'cks;'#13#10'    fTicks := fTimer.SysTimebase.TicksFrequency;'#13#10'    Deb'
+  +'ugLn(''### LazProfiler: SysTicks used. Freq=''+IntToStr(fTicks));'#13#10'  '
+  +'end;'#13#10'  fMasterProc := TLPPasProc.Create(''Master'', 0, '''', '''', '
+  +''''', -1);'#13#10'  fOffTicks := 0;'#13#10'  fThreads := TList.Create;'#13
+  +#10'  lCurStackFrame := TLPStackFrame.Create(fMasterProc, nil);'#13#10'  lCu'
+  +'rStackFrame.fTicksInit := Ticks();'#13#10'  lCurStackFrame.fTicksStart := l'
+  +'CurStackFrame.fTicksInit;'#13#10'  SetLength(fCurStackFrame, 100);'#13#10' '
+  +' fCurStackFrame[fThreads.Add(Pointer(ThreadID))] := lCurStackFrame;'#13#10
+  +'  fLoaded := LoadFromFile(fName+cSettingExtension);'#13#10'  fRunning := fA'
+  +'utoStart;'#13#10'end;'#13#10#13#10'destructor TLazProfiler.Destroy;'#13#10
+  +'var'#13#10'  i: Integer;'#13#10'  lCurStackFrame: TLPStackFrame;'#13#10'beg'
+  +'in'#13#10'  fMasterProc.Free;'#13#10'  for i := 0 to fThreads.Count - 1 do '
+  +'begin'#13#10'    lCurStackFrame := fCurStackFrame[i];'#13#10'    lCurStackF'
+  +'rame.fTicksEnd := Ticks();'#13#10'    lCurStackFrame.fTicksExit := lCurStac'
+  +'kFrame.fTicksEnd;'#13#10'    lCurStackFrame.Calc;'#13#10'    lCurStackFrame'
+  +'.Free;'#13#10'  end;'#13#10'  { calc percentages }'#13#10#13#10'  { free re'
+  +'sources }'#13#10'  fThreads.Free;'#13#10'  SetLength(fCurStackFrame, 0);'#13
+  +#10'  fTimer.Free;'#13#10'  if fTicks > 0 then'#13#10'    fProcList.Convert('
+  +'fTicks)'#13#10'  else'#13#10'    DebugLn(''***** LazProfiler: fTicks=''+Int'
+  +'ToStr(fTicks));'#13#10'  if fLoaded then'#13#10'    SaveToFile(fName+cSetti'
+  +'ngExtension);'#13#10'  DoneCriticalSection(fLock);'#13#10'  inherited Destr'
+  +'oy;'#13#10'end;'#13#10#13#10#13#10'{ TLPPasProc }'#13#10#13#10'procedure TL'
+  +'PPasProc.Init;'#13#10'begin'#13#10'  fCount := 0;'#13#10'  fNet := 0;'#13#10
+  +'  fGross := 0;'#13#10'end;'#13#10#13#10'procedure TLPPasProc.SetFileName(pF'
+  +'ileName: String);'#13#10'begin'#13#10'  if fFileName = pFileName then Exit;'
+  +#13#10'  fFileName := pFileName;'#13#10'  fFileNameUp := UpperCase(fFileName'
+  +');'#13#10'end;'#13#10#13#10'procedure TLPPasProc.SetName(pName: String);'#13
+  +#10'begin'#13#10'  if fName = pName then Exit;'#13#10'  fName := pName;'#13
+  +#10'  fNameUp := UpperCase(pName);'#13#10'end;'#13#10#13#10'constructor TLPP'
+  +'asProc.Create(pName: String; pKind: Integer; pNameOfClass, pUnitName, pFile'
+  +'Name: String; pRow: Integer);'#13#10'begin'#13#10'  inherited Create(pNameO'
+  +'fClass, pUnitName, pFileName);'#13#10'  fName := pName;'#13#10'  fNameUp :='
+  +' UpperCase(pName);'#13#10'  fRow := pRow;'#13#10'  fInstrument := True;'#13
+  +#10'  fKind := pKind;'#13#10'  Init;'#13#10'end;'#13#10#13#10'destructor TLP'
+  +'PasProc.Destroy;'#13#10'begin'#13#10'  fCalls.Free;'#13#10'  fCalledBy.Free'
+  +';'#13#10'  fCallsCount.Free;'#13#10'  fCalledByCount.Free;'#13#10'  inherit'
+  +'ed Destroy;'#13#10'end;'#13#10#13#10'procedure TLPPasProc.Calls(pProc: TLPP'
+  +'asProc);'#13#10'var'#13#10'  i: SizeInt;'#13#10'begin'#13#10'  if not Assig'
+  +'ned(fCalls) then begin'#13#10'    fCalls := TLPPasProcList.Create(False);'
+  +#13#10'    fCallsCount := TIntegerList.Create;'#13#10'  end;'#13#10'  i := f'
+  +'Calls.IndexOf(pProc);'#13#10'  if i = -1 then begin'#13#10'    fCalls.Add(p'
+  +'Proc);'#13#10'    fCallsCount.Add(1);'#13#10'  end else begin'#13#10'    fC'
+  +'allsCount[i] := fCallsCount[i] + 1;'#13#10'  end;'#13#10'end;'#13#10#13#10
+  +'procedure TLPPasProc.CalledBy(pProc: TLPPasProc);'#13#10'var'#13#10'  i: Si'
+  +'zeInt;'#13#10'begin'#13#10'  if not Assigned(fCalledBy) then begin'#13#10' '
+  +'   fCalledBy := TLPPasProcList.Create(False);'#13#10'    fCalledByCount := '
+  +'TIntegerList.Create;'#13#10'  end;'#13#10'  i := fCalledBy.IndexOf(pProc);'
+  +#13#10'  if i = -1 then begin'#13#10'    fCalledBy.Add(pProc);'#13#10'    fC'
+  +'alledByCount.Add(1);'#13#10'  end else begin'#13#10'    fCalledByCount[i] :'
+  +'= fCalledByCount[i] + 1;'#13#10'  end;'#13#10'end;'#13#10#13#10'end.'#13#10
+  +#13#10
 ]);
 LazarusResources.Add('timer','PAS',[
   'unit EpikTimer;'#10#10'{ Name: EpikTimer'#10'  Description: Precision timer/'

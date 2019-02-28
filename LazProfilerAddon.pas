@@ -27,7 +27,7 @@ uses
   MenuIntf,
   ProjectIntf,
   SysUtils,
-  VirtualTrees,
+  Laz.VirtualTrees,
   vtvObject;
 
 type

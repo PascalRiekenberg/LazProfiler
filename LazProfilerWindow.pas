@@ -31,7 +31,7 @@ uses
   LazProfilerCore,
   ProjectIntf,
   SysUtils,
-  VirtualTrees,
+  Laz.VirtualTrees,
   vtvObject;
 
 const
@@ -46,7 +46,7 @@ type
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
-    VST: TVirtualStringTree;
+    VST: TLazVirtualStringTree;
     procedure VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
     procedure VSTChecked(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTCollapsedExpanded(Sender: TBaseVirtualTree; Node: PVirtualNode);

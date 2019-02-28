@@ -21,7 +21,7 @@ object LazProfilerForm: TLazProfilerForm
       Caption = 'Result'
       ClientHeight = 532
       ClientWidth = 552
-      object VST: TVirtualStringTree
+      object VST: TLazVirtualStringTree
         Left = 0
         Height = 532
         Top = 0
