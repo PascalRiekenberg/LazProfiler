@@ -3,7 +3,7 @@
   <Package Version="4">
     <PathDelim Value="\"/>
     <Name Value="LazProfiler"/>
-    <Type Value="RunAndDesignTime"/>
+    <Type Value="DesignTime"/>
     <Author Value="Pascal Riekenberg"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -13,55 +13,48 @@
       </SearchPaths>
       <Other>
         <CustomOptions Value="$(IDEBuildOptions)"/>
-        <ExecuteBefore>
-          <Command Value="$MakeExe($(LazarusDir)/tools/lazres) runtime.lrs &quot;LazProfilerRunTime.pas&quot;=rt &quot;LazProfilerCore.pas&quot;=core &quot;$PkgDir(etpackage)epiktimer.pas&quot;=timer"/>
-        </ExecuteBefore>
       </Other>
     </CompilerOptions>
     <Description Value="LazProfiler is an IDE addon for profiling your programs with one click."/>
-    <Version Minor="2"/>
-    <Files Count="6">
+    <Version Minor="3"/>
+    <Files Count="5">
       <Item1>
         <Filename Value="LazProfilerAddon.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="LazProfilerAddon"/>
       </Item1>
       <Item2>
-        <Filename Value="LazProfilerCore.pas"/>
-        <UnitName Value="LazProfilerCore"/>
-      </Item2>
-      <Item3>
-        <Filename Value="LazProfilerRunTime.pas"/>
-        <UnitName Value="LazProfilerRunTime"/>
-      </Item3>
-      <Item4>
         <Filename Value="LazProfilerWindow.pas"/>
         <UnitName Value="LazProfilerWindow"/>
-      </Item4>
-      <Item5>
+      </Item2>
+      <Item3>
         <Filename Value="vtvObject.pas"/>
         <UnitName Value="vtvObject"/>
+      </Item3>
+      <Item4>
+        <Filename Value="LazProfilerRunTime.pas"/>
+        <UnitName Value="LazProfilerRunTime"/>
+      </Item4>
+      <Item5>
+        <Filename Value="LazProfilerCore.pas"/>
+        <UnitName Value="LazProfilerCore"/>
       </Item5>
-      <Item6>
-        <Filename Value="runtime.lrs"/>
-        <Type Value="LRS"/>
-      </Item6>
     </Files>
     <RequiredPkgs Count="6">
       <Item1>
-        <PackageName Value="laz.virtualtreeview_package"/>
+        <PackageName Value="etpackage"/>
       </Item1>
       <Item2>
-        <PackageName Value="CodeTools"/>
+        <PackageName Value="laz.virtualtreeview_package"/>
       </Item2>
       <Item3>
-        <PackageName Value="IDEIntf"/>
+        <PackageName Value="CodeTools"/>
       </Item3>
       <Item4>
-        <PackageName Value="LCLBase"/>
+        <PackageName Value="IDEIntf"/>
       </Item4>
       <Item5>
-        <PackageName Value="etpackage"/>
+        <PackageName Value="LCLBase"/>
       </Item5>
       <Item6>
         <PackageName Value="FCL"/>

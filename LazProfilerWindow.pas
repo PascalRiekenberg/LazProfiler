@@ -27,26 +27,25 @@ uses
   Forms,
   Generics.Collections,
   Generics.Defaults,
-  Graphics,
+  Graphics, StdCtrls,
   LazProfilerCore,
   ProjectIntf,
   SysUtils,
   Laz.VirtualTrees,
   vtvObject;
 
-const
-  cColCount = 6;
-
 type
 
   { TLazProfilerForm }
 
   TLazProfilerForm = class(TForm)
+    CBActive: TCheckBox;
     Icons: TImageList;
-    PageControl1: TPageControl;
+    PageControl: TPageControl;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     VST: TLazVirtualStringTree;
+    procedure CBActiveChange(Sender: TObject);
     procedure VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
     procedure VSTChecked(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTCollapsedExpanded(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -63,10 +62,11 @@ type
     fData: TLPPasProcList;
     fTreeData: TvtvObjList;
     fDataChanged: Boolean;
-    fMaxColSize: array[0..cColCount - 1] of Integer;
-    fSort1,
-    fSort2,
-    fSort3: TvtvObjList;
+    fMaxColSize: array[0..cColumnCount - 1] of Integer;
+    fProcList,
+    fClassList,
+    fUnitList,
+    fPackageList: TvtvObjList;
     procedure SetData(pData: TLPPasProcList);
     procedure PrepareData;
     procedure RebuildTree;
@@ -75,13 +75,13 @@ type
     constructor Create(TheOwner: TComponent); override;
     destructor Destroy; override;
     property Data: TLPPasProcList read fData write SetData;
-    property DataChanged: Boolean read fDataChanged;
+    property DataChanged: Boolean read fDataChanged write fDataChanged;
   end;
 
 
-  { TLPProcObjectComparer }
+  { TLPProcClassComparer }
 
-  TLPProcObjectComparer = class(specialize TComparer<TLPPasProc>)
+  TLPProcClassComparer = class(specialize TComparer<TLPPasProc>)
     function Compare(constref Left, Right: TLPPasProc): Integer; override; overload;
   end;
 
@@ -89,6 +89,13 @@ type
   { TLPProcUnitComparer }
 
   TLPProcUnitComparer = class(specialize TComparer<TLPPasProc>)
+    function Compare(constref Left, Right: TLPPasProc): Integer; override; overload;
+  end;
+
+
+  { TLPProcPackageComparer }
+
+  TLPProcPackageComparer = class(specialize TComparer<TLPPasProc>)
     function Compare(constref Left, Right: TLPPasProc): Integer; override; overload;
   end;
 
@@ -101,10 +108,28 @@ uses
   SrcEditorIntf;
 
 var
-  ProcObjectComparer: TLPProcObjectComparer;
+  ProcClassComparer: TLPProcClassComparer;
   ProcUnitComparer: TLPProcUnitComparer;
+  ProcPackageComparer: TLPProcPackageComparer;
 
 {$R *.lfm}
+
+{ TLPProcPackageComparer }
+
+function TLPProcPackageComparer.Compare(constref Left, Right: TLPPasProc): Integer;
+begin
+  if Left.PackageIsProject
+  and not Right.PackageIsProject then
+    Result := -1
+  else if Right.PackageIsProject
+  and not Left.PackageIsProject then
+    Result := 1
+  else
+    Result := strcomp(PChar(Left.PackageNameUp), PChar(Right.PackageNameUp));
+  if Result = 0 then Result := strcomp(PChar(Left.UnitNameUp), PChar(Right.UnitNameUp));
+  if Result = 0 then Result := strcomp(PChar(Left.NameOfClassUp), PChar(Right.NameOfClassUp));
+  if Result = 0 then Result := strcomp(PChar(Left.NameUp), PChar(Right.NameUp));
+end;
 
 { TLPProcUnitComparer }
 
@@ -116,9 +141,9 @@ begin
 end;
 
 
-{ TLPProcObjectComparer }
+{ TLPProcClassComparer }
 
-function TLPProcObjectComparer.Compare(constref Left, Right: TLPPasProc): Integer;
+function TLPProcClassComparer.Compare(constref Left, Right: TLPPasProc): Integer;
 begin
   Result := strcomp(PChar(Left.NameOfClassUp), PChar(Right.NameOfClassUp));
   if Result = 0 then Result := strcomp(PChar(Left.NameUp), PChar(Right.NameUp));
@@ -144,32 +169,31 @@ begin
   Screen.Cursor := crHourGlass;
   try
     if VST.Header.SortColumn = HitInfo.Column then begin
+      // swap current sort order
       if VST.Header.SortDirection = sdAscending then
         VST.Header.SortDirection := sdDescending
       else
         VST.Header.SortDirection := sdAscending;
     end else begin
-      if HitInfo.Column in [3, 4, 5] then
+      // different column clicked
+      // default sort direction
+      if HitInfo.Column in [cCountCol, cPerNetCol, cSumNetCol, cPerGrossCol, cSumGrossCol, cAvgNetCol, cAvgGrossCol] then
         VST.Header.SortDirection := sdDescending
       else
         VST.Header.SortDirection := sdAscending;
-      if (
-        (VST.Header.SortColumn in [0, 3, 4, 5])
-        and (HitInfo.Column in [1, 2])
+      // rebuild of layout needed?
+      lFullRebuild := (
+        (VST.Header.SortColumn in [cNameCol, cCountCol, cPerNetCol, cSumNetCol, cPerGrossCol, cSumGrossCol, cAvgNetCol, cAvgGrossCol])
+        and (HitInfo.Column in [cClassCol, cUnitCol, cPackageCol])
       ) or (
-        (VST.Header.SortColumn in [1, 2])
+        (VST.Header.SortColumn in [cClassCol, cUnitCol, cPackageCol])
         and (HitInfo.Column <> VST.Header.SortColumn)
-      ) then begin
-        VST.Header.SortColumn := HitInfo.Column;
-        //DebugLn('change layout');
-        lFullRebuild := True;
-      end else begin
-        VST.Header.SortColumn := HitInfo.Column;
-      end;
+      );
+      VST.Header.SortColumn := HitInfo.Column;
     end;
-    if lFullRebuild then
-      RebuildTree
-    else begin
+    if lFullRebuild then begin
+      RebuildTree;
+    end else begin
       if fTreeData.Count > 0 then begin
         VST.SortTree(VST.Header.SortColumn, VST.Header.SortDirection);
         RebuildLines;
@@ -216,6 +240,11 @@ begin
   TargetCanvas.FillRect(CellRect);
 end;
 
+procedure TLazProfilerForm.CBActiveChange(Sender: TObject);
+begin
+  Addon.Active := CBActive.Checked;
+end;
+
 procedure TLazProfilerForm.VSTCollapsedExpanded(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   lData: TvtvObj;
@@ -223,6 +252,7 @@ begin
   lData := PvtvObj(Sender.GetNodeData(Node))^;
   lData.UpdateExpanded;
   VSTStructureChange(Sender, Node, crIgnore);
+  fDataChanged := True;
 end;
 
 procedure TLazProfilerForm.VSTCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
@@ -243,19 +273,49 @@ begin
   lP1 := PLPvtvProc(VST.GetNodeData(Node1))^.PasProc;
   lP2 := PLPvtvProc(VST.GetNodeData(Node2))^.PasProc;
   case Column of
-    0: Result := strcomp(PChar(lP1.NameUp), PChar(lP2.NameUp));
-    1: begin
+    cNameCol:
+      Result := strcomp(PChar(lP1.NameUp), PChar(lP2.NameUp));
+    cClassCol: begin
       Result := strcomp(PChar(lP1.NameOfClassUp), PChar(lP2.NameOfClassUp));
       if Result = 0 then Result := strcomp(PChar(lP1.NameUp), PChar(lP2.NameUp))
     end;
-    2: begin
+    cUnitCol: begin
       Result := strcomp(PChar(lP1.UnitNameUp), PChar(lP2.UnitNameUp));
       if Result = 0 then Result := strcomp(PChar(lP1.NameOfClassUp), PChar(lP2.NameOfClassUp));
       if Result = 0 then Result := strcomp(PChar(lP1.NameUp), PChar(lP2.NameUp))
     end;
-    3: Result := lP1.Count - lP2.Count;
-    4: Result := Compare(lP1.Net, lP2.Net);
-    5: Result := Compare(lP1.Gross, lP2.Gross);
+    cPackageCol: begin
+      // Project immer oben
+      if lP1.PackageIsProject
+      and not lP2.PackageIsProject then begin
+        if VST.Header.SortDirection = sdAscending then
+          Result := -1
+        else
+          Result := 1;
+      end else if lP2.PackageIsProject
+      and not lP1.PackageIsProject then begin
+        if VST.Header.SortDirection = sdAscending then
+          Result := 1
+        else
+          Result := -1;
+      end else
+        Result := strcomp(PChar(lP1.PackageNameUp), PChar(lP2.PackageNameUp));
+      if Result = 0 then Result := strcomp(PChar(lP1.UnitNameUp), PChar(lP2.UnitNameUp));
+      if Result = 0 then Result := strcomp(PChar(lP1.NameOfClassUp), PChar(lP2.NameOfClassUp));
+      if Result = 0 then Result := strcomp(PChar(lP1.NameUp), PChar(lP2.NameUp))
+    end;
+    cCountCol:
+      Result := lP1.Count - lP2.Count;
+    cPerNetCol,
+    cSumNetCol:
+      Result := Compare(lP1.Net, lP2.Net);
+    cPerGrossCol,
+    cSumGrossCol:
+      Result := Compare(lP1.Gross, lP2.Gross);
+    cAvgNetCol:
+      Result := Compare(lP1.AvgNet, lP2.AvgNet);
+    cAvgGrossCol:
+      Result := Compare(lP1.AvgGross, lP2.AvgGross);
   end;
   //Debugln('compare '+lp1.Name+' - '+lp2.Name+' Col='+IntToStr(Column)+' Result='+IntToStr(Result));
 end;
@@ -314,29 +374,29 @@ begin
     UpdateVerticalScrollBar(False);
     lSize := ClientRect.Right - ClientRect.Left;
     lMaxSize := 0;
-    for i := 0 to cColCount - 1 do
+    for i := 0 to cColumnCount - 1 do
       lMaxSize := lMaxSize + fMaxColSize[i];
     if lMaxSize <= lSize then begin
       // width is enough
-      for i := cColCount - 1 downto 1 do begin
+      for i := cColumnCount - 1 downto 1 do begin
         Header.Columns[i].Width := fMaxColSize[i];
         lSize := lSize - fMaxColSize[i];
       end;
       Header.Columns[0].Width := lSize;
     end else begin
       // width is to small
-      for i := cColCount - 1 downto 3 do begin
+      for i := cColumnCount - 1 downto cCountCol do begin
         Header.Columns[i].Width := fMaxColSize[i];
         lSize := lSize - fMaxColSize[i];
         lMaxSize := lMaxSize - fMaxColSize[i];
       end;
       lMinSize := 0;
-      for i := 0 to 2 do begin
+      for i := 0 to cPackageCol do begin
         lMinSize := lMinSize + Header.Columns[i].MinWidth;
       end;
       if lMinSize <= lSize then begin
         // min width is enough -> split space (relative to min width)
-        for i := 2 downto 0 do begin
+        for i := cPackageCol downto 0 do begin
           lCalcSize := round(lSize * Header.Columns[i].MinWidth / lMinSize);
           if (lCalcSize > fMaxColSize[i])
           and (i <> 0) then begin
@@ -348,7 +408,7 @@ begin
           lMinSize := lMinSize - Header.Columns[i].MinWidth;
         end;
       end else begin
-        for i := 0 to 2 do
+        for i := 0 to cPackageCol do
           Header.Columns[i].Width := Header.Columns[i].MinWidth;
       end;
     end;
@@ -360,7 +420,7 @@ var
   i, lNewColSize: Integer;
 begin
   with Sender as TVirtualStringTree do begin
-    for i := 0 to cColCount - 1 do begin
+    for i := 0 to cColumnCount - 1 do begin
       lNewColSize := GetMaxColumnWidth(i);
       if lNewColSize < Header.Columns[i].MinWidth then
           lNewColSize := Header.Columns[i].MinWidth;
@@ -392,23 +452,25 @@ var
   lList: TLPPasProcList;
   lPasClass: TLPvtvPasClass;
   lPasUnit: TLPvtvPasUnit;
+  lPasPackage: TLPvtvPasPackage;
 begin
-  fSort1.Clear;
-  fSort2.Clear;
-  fSort3.Clear;
+  fProcList.Clear;
+  fClassList.Clear;
+  fUnitList.Clear;
+  fPackageList.Clear;
   lList := TLPPasProcList.Create(False);
   try
     for i := 0 to fData.Count - 1 do begin
       lPasProc := fData[i];
       // default
-      fSort1.Add(TLPvtvPasProc.Create(lPasProc));
+      fProcList.Add(TLPvtvPasProc.Create(lPasProc));
       // temp list
       lList.Add(lPasProc);
     end;
 
-    // object
+    // class
     lPasClass := Nil;
-    lList.Sort(ProcObjectComparer);
+    lList.Sort(ProcClassComparer);
     for i := 0 to lList.Count - 1 do begin
       lPasProc := lList[i];
       if not Assigned(lPasClass)
@@ -416,14 +478,14 @@ begin
         if Assigned(lPasClass)
         and (lPasClass.PasProc.NameOfClass = '') then
           lPasClass.Free;
-        lPasClass := TLPvtvPasClass.Create(lPasProc.NameOfClass, lPasProc.UnitName, lPasProc.FileName);
+        lPasClass := TLPvtvPasClass.Create(lPasProc.NameOfClass, lPasProc.UnitName, lPasProc.FileName, lPasProc.PackageName);
         if lPasClass.PasProc.NameOfClass <> '' then begin
           lPasClass.PasClass := lPasProc.PasClass;
-          fSort2.Add(lPasClass);
+          fClassList.Add(lPasClass);
         end;
       end;
       if lPasClass.PasProc.NameOfClass = '' then begin
-        fSort2.Add(TLPvtvPasProc.Create(lPasProc));
+        fClassList.Add(TLPvtvPasProc.Create(lPasProc));
         lPasClass.PasClass := lPasProc.PasClass;
       end else
         lPasClass.Add(TLPvtvPasProc.Create(lPasProc));
@@ -440,16 +502,55 @@ begin
       lPasProc := lList[i];
       if not Assigned(lPasUnit)
       or (lPasUnit.PasProc.UnitName <> lPasProc.UnitName) then begin
-        lPasUnit := TLPvtvPasUnit.Create(lPasProc.UnitName, lPasProc.FileName);
+        lPasUnit := TLPvtvPasUnit.Create(lPasProc.UnitName, lPasProc.FileName, lPasProc.PackageName);
         lPasUnit.PasUnit := lPasProc.PasUnit;
-        fSort3.Add(lPasUnit);
+        fUnitList.Add(lPasUnit);
       end;
       if not Assigned(lPasClass)
       or (lPasClass.PasProc.NameOfClassUp <> lPasProc.NameOfClassUp) then begin
         if Assigned(lPasClass)
         and (lPasClass.PasProc.NameOfClass = '') then
           lPasClass.Free;
-        lPasClass := TLPvtvPasClass.Create(lPasProc.NameOfClass, lPasProc.UnitName, lPasProc.FileName);
+        lPasClass := TLPvtvPasClass.Create(lPasProc.NameOfClass, lPasProc.UnitName, lPasProc.FileName, lPasProc.PackageName);
+        if lPasClass.PasProc.NameOfClass <> '' then begin
+          lPasClass.PasClass := lPasProc.PasClass;
+          lPasUnit.Add(lPasClass);
+        end;
+      end;
+      if lPasClass.PasProc.NameOfClass = '' then
+        lPasUnit.Add(TLPvtvPasProc.Create(lPasProc))
+      else
+        lPasClass.Add(TLPvtvPasProc.Create(lPasProc));
+    end;
+    if Assigned(lPasClass)
+    and (lPasClass.PasProc.NameOfClass = '') then
+      lPasClass.Free;
+
+    // package
+    lPasPackage := Nil;
+    lPasUnit := Nil;
+    lPasClass := Nil;
+    lList.Sort(ProcPackageComparer);
+    for i := 0 to lList.Count - 1 do begin
+      lPasProc := lList[i];
+      if not Assigned(lPasPackage)
+      or (lPasPackage.PasProc.PackageNameUp <> lPasProc.PackageNameUp) then begin
+        lPasPackage := TLPvtvPasPackage.Create(lPasProc.PackageName);
+        lPasPackage.PasPackage := lPasProc.PasPackage;
+        fPackageList.Add(lPasPackage);
+      end;
+      if not Assigned(lPasUnit)
+      or (lPasUnit.PasProc.UnitName <> lPasProc.UnitName) then begin
+        lPasUnit := TLPvtvPasUnit.Create(lPasProc.UnitName, lPasProc.FileName, lPasProc.PackageName);
+        lPasUnit.PasUnit := lPasProc.PasUnit;
+        lPasPackage.add(lPasUnit);
+      end;
+      if not Assigned(lPasClass)
+      or (lPasClass.PasProc.NameOfClassUp <> lPasProc.NameOfClassUp) then begin
+        if Assigned(lPasClass)
+        and (lPasClass.PasProc.NameOfClass = '') then
+          lPasClass.Free;
+        lPasClass := TLPvtvPasClass.Create(lPasProc.NameOfClass, lPasProc.UnitName, lPasProc.FileName, lPasProc.PackageName);
         if lPasClass.PasProc.NameOfClass <> '' then begin
           lPasClass.PasClass := lPasProc.PasClass;
           lPasUnit.Add(lPasClass);
@@ -472,10 +573,14 @@ procedure TLazProfilerForm.RebuildTree;
 begin
   VST.RootNodeCount := 0;
   case VST.Header.SortColumn of
-    1: fTreeData := fSort2;
-    2: fTreeData := fSort3;
+    cClassCol:
+      fTreeData := fClassList;
+    cUnitCol:
+      fTreeData := fUnitList;
+    cPackageCol:
+      fTreeData := fPackageList;
     else
-      fTreeData := fSort1;
+      fTreeData := fProcList;
   end;
   if fTreeData.Count > 0 then begin
     VST.RootNodeCount := fTreeData.Count;
@@ -503,29 +608,33 @@ end;
 constructor TLazProfilerForm.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
-  fSort1 := TvtvObjList.Create(True);
-  fSort2 := TvtvObjList.Create(True);
-  fSort3 := TvtvObjList.Create(True);
+  fProcList := TvtvObjList.Create(True);
+  fClassList := TvtvObjList.Create(True);
+  fUnitList := TvtvObjList.Create(True);
+  fPackageList := TvtvObjList.Create(True);
   VST.NodeDataSize := SizeOf(PLPPasProc);
 end;
 
 destructor TLazProfilerForm.Destroy;
 begin
-  fSort1.Free;
-  fSort2.Free;
-  fSort3.Free;
+  fProcList.Free;
+  fClassList.Free;
+  fUnitList.Free;
+  fPackageList.Free;
   inherited Destroy;
 end;
 
 initialization
 
-  ProcObjectComparer := TLPProcObjectComparer.Create;
+  ProcClassComparer := TLPProcClassComparer.Create;
   ProcUnitComparer := TLPProcUnitComparer.Create;
+  ProcPackageComparer := TLPProcPackageComparer.Create;
 
 finalization;
 
-  ProcObjectComparer.Free;
+  ProcClassComparer.Free;
   ProcUnitComparer.Free;
+  ProcPackageComparer.Free;
 
 end.
 

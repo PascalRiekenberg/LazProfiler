@@ -8,8 +8,8 @@ unit LazProfiler;
 interface
 
 uses
-  LazProfilerAddon, LazProfilerCore, LazProfilerRunTime, LazProfilerWindow, 
-  vtvObject, LazarusPackageIntf;
+  LazProfilerAddon, LazProfilerWindow, vtvObject, LazProfilerRunTime, 
+  LazProfilerCore, LazarusPackageIntf;
 
 implementation
 
