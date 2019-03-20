@@ -1607,7 +1607,7 @@ begin
   fOldClassList := TLPPasClassList.Create(True);
   fIncludeList := TLPFileList.Create(True);
   fOldProcList := TLPPasProcList.Create(True);
-  fUnitOutputDirectory := SysUtils.GetEnvironmentVariable('TEMP')+'\LazProfiler\$(TargetCPU)-$(TargetOS)';
+  fUnitOutputDirectory := SysUtils.GetTempDir(False) + 'LazProfiler' + PathDelim + '$(TargetCPU)-$(TargetOS)';
 end;
 
 destructor TProfilerAddon.Destroy;
