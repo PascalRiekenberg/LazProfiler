@@ -317,7 +317,7 @@ function TLPvtvPasPackage.InitialStates: TVirtualNodeInitStates;
 begin
   Result := inherited InitialStates;
   if not Assigned(fPasPackage) then begin
-    WriteLn('!!! TLPvtvPasPackage: ', fPasProc.PackageName, ' fPasPackage=Nil');
+    DebugLn('!!! TLPvtvPasPackage: ', fPasProc.PackageName, ' fPasPackage=Nil');
   end else
   if fPasPackage.Expanded then
     Result := Result + [ivsExpanded];
@@ -362,7 +362,7 @@ function TLPvtvPasUnit.InitialStates: TVirtualNodeInitStates;
 begin
   Result := inherited InitialStates;
   if not Assigned(fPasUnit) then begin
-    WriteLn('!!! TLPvtvPasUnit: ', fPasProc.UnitName, ' fPasUnit=Nil');
+    DebugLn('!!! TLPvtvPasUnit: ', fPasProc.UnitName, ' fPasUnit=Nil');
   end else
   if fPasUnit.Expanded then
     Result := Result + [ivsExpanded];
@@ -426,7 +426,7 @@ begin
       end;
     end;
   end else begin
-    WriteLn('*** LazProfiler: !!! re-saving ', fFilename);
+    DebugLn('*** LazProfiler: !!! re-saving ', fFilename);
     fText.SaveToFile(fFileName);
   end;
   Result := True;
@@ -466,7 +466,7 @@ function TLPvtvPasClass.InitialStates: TVirtualNodeInitStates;
 begin
   Result := inherited InitialStates;
   if not Assigned(fPasClass) then begin
-    WriteLn('!!! TLPvtvPasClass: ', fPasProc.NameOfClass, ' fPasClass=Nil');
+    DebugLn('!!! TLPvtvPasClass: ', fPasProc.NameOfClass, ' fPasClass=Nil');
   end else
   if fPasClass.Expanded then
     Result := Result + [ivsExpanded];
@@ -941,7 +941,7 @@ begin
   RestoreSources;
   if not fActive then
     Exit;
-  WriteLn('*** LazProfiler: ParseSources(', BoolToStr(pInstrument, True), ')');
+  DebugLn('*** LazProfiler: ParseSources(', BoolToStr(pInstrument, True), ')');
 
   lList4 := fOldPackageList;
   fOldPackageList := fPackageList;
@@ -996,6 +996,7 @@ var
   lProfiling: Boolean;
   lPos: SizeInt;
   lCurFile: TLPFile;
+  lColumnOffset: Integer;
 
   procedure CheckFile;
   var
@@ -1019,59 +1020,41 @@ var
     end;
   end;
 
-  procedure InsertEnter(pRow, pCol: Integer; pProcID: Integer);
+  procedure InsertText(Text: String; pRow, pCol: Integer);
   var
     lLine: String;
   begin
     CheckFile;
     lLine := lCurFile.Text[pRow];
-    Insert(' try LazProfiler.EnterProfiling(' + IntToStr(pProcID) + ');', lLine, pCol);
+    Insert(Text, lLine, pCol + lColumnOffset);
+    lColumnOffset := lColumnOffset + Length(Text);
     lCurFile.Text[pRow] := lLine;
     lCurFile.Changed := True;
+  end;
+
+  procedure InsertEnter(pRow, pCol: Integer; pProcID: Integer);
+  begin
+    InsertText(' try LazProfiler.EnterProfiling(' + IntToStr(pProcID) + ');', pRow, pCol);
   end;
 
   procedure InsertExit(pRow, pCol: Integer; pProcID: Integer);
-  var
-    lLine: String;
   begin
-    CheckFile;
-    lLine := lCurFile.Text[pRow];
-    Insert('finally LazProfiler.ExitProfiling(' + IntToStr(pProcID) + '); end; ', lLine, pCol);
-    lCurFile.Text[pRow] := lLine;
-    lCurFile.Changed := True;
+    InsertText('finally LazProfiler.ExitProfiling(' + IntToStr(pProcID) + '); end; ', pRow, pCol);
   end;
 
   procedure InsertStart(pRow, pCol: Integer);
-  var
-    lLine: String;
   begin
-    CheckFile;
-    lLine := lCurFile.Text[pRow];
-    Insert('LazProfiler.StartProfiling; ', lLine, pCol);
-    lCurFile.Text[pRow] := lLine;
-    lCurFile.Changed := True;
+    InsertText('LazProfiler.StartProfiling; ', pRow, pCol);
   end;
 
   procedure InsertStop(pRow, pCol: Integer);
-  var
-    lLine: String;
   begin
-    CheckFile;
-    lLine := lCurFile.Text[pRow];
-    Insert('LazProfiler.StopProfiling; ', lLine, pCol);
-    lCurFile.Text[pRow] := lLine;
-    lCurFile.Changed := True;
+    InsertText('LazProfiler.StopProfiling; ', pRow, pCol);
   end;
 
   procedure InsertUnit(pRow, pCol: Integer);
-  var
-    lLine: String;
   begin
-    CheckFile;
-    lLine := lCurFile.Text[pRow];
-    Insert(' LazProfilerRunTime, ', lLine, pCol);
-    lCurFile.Text[pRow] := lLine;
-    lCurFile.Changed := True;
+    InsertText(' LazProfilerRunTime, ', pRow, pCol);
   end;
 
   procedure InsertUses(pRow, pCol: Integer);
@@ -1151,14 +1134,13 @@ var
         lName := 'operator ' + lName;
       lBlock.name := lName;
       lBlock.nameofclass := lNameOfClass;
-
     end;
   end;
 
 begin
   Result := True;
   lCurFile := pFile;
-  //WriteLn('  '+pFile.FileName);
+  //DebugLn('  '+pFile.FileName);
   fr := TFileResolver.Create;
   lIncludeDirs := TStringList.Create;
   try
@@ -1173,6 +1155,9 @@ begin
     lIncludeDirs.Free;
   end;
   pas := TPascalScanner.Create(fr);
+  {$IF FPC_FULLVERSION>=30301} 
+  pas.Options := pas.Options + [po_IgnoreUnknownResource];
+  {$ENDIF}
   pas.TokenOptions := [toOperatorToken];
   pas.AddDefine('fpc', true);
   lBlockStack := TBlocList.Create(False);
@@ -1188,6 +1173,7 @@ begin
     lStartProc := nil;
     lProfiling := True;
     lProfilingChangeLevel := 0;
+    lColumnOffset := 0;
     pas.OpenFile(pFile.FileName);
     while True do case pas.FetchToken of
       tkunit, tkprogram: begin
@@ -1223,7 +1209,7 @@ begin
             lBlock.procid := AddProc(lName, Integer(lToken), lNameOfClass, lUnitName, lCurFile.FileName, lCurFile.PackageName, pas.CurRow - 1);
             if lBlock.procid <> -1 then
               InsertEnter(pas.CurRow - 1, pas.CurColumn, lBlock.procid);
-            //WriteLn('    +', lName, ' - ', IntToStr(lBlock.procid), ' - ', lCurFile.PackageName, '.', ExtractFileName(lCurFile.Filename));
+            //DebugLn('    +', lName, ' - ', IntToStr(lBlock.procid), ' - ', lCurFile.PackageName, '.', ExtractFileName(lCurFile.Filename));
           end;
         end;
         NewBlock(pas.CurToken, '');
@@ -1278,6 +1264,7 @@ begin
           PopBlock;
           DoProc;
         end;
+       lColumnOffset := 0;
       end;
       tkuses: begin
         case lPart of
@@ -1314,7 +1301,7 @@ begin
               lTempBlock := lTempBlock.parent;
             if Assigned(lTempBlock) then begin
               if lTempBlock.procid <> -1 then begin
-                //WriteLn('*** LazProfiler: START-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
+                //DebugLn('*** LazProfiler: START-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
                 lStartProc := lTempBlock;
                 InsertStart(pas.CurRow - 1, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
                 fAutoStart := False;
@@ -1336,7 +1323,7 @@ begin
                 exit(False);
               end else begin
                 if lTempBlock = lStartProc then begin
-                  //WriteLn('*** LazProfiler: STOP-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
+                  //DebugLn('*** LazProfiler: STOP-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
                   InsertStop(pas.CurRow - 1, pas.CurTokenPos.Column);  // CurTokenPos needs FPC trunk 37235
                   lStartProc := nil;
                 end else begin
@@ -1368,6 +1355,8 @@ begin
           lProfiling := True
         end;
       end;
+      tkLineEnding:
+        lColumnOffset := 0;
       tkEOF:
         break;
     end;
@@ -1435,7 +1424,7 @@ begin
   end;
   // hint: save will only happen if ToolStatus is itNone or itDebugger: needs trunc 60719
   if not (LazarusIDE.ToolStatus in [itNone, itDebugger]) then
-    WriteLn('*** LazProfiler: RestoreModifiedSettings: Saving project and packages will not work. Use at least Lazarus trunk r60719.');
+    DebugLn('*** LazProfiler: RestoreModifiedSettings: Saving project and packages will not work. Use at least Lazarus trunk r60719.');
   LazarusIDE.DoSaveProject([]);
   PackageEditingInterface.DoSaveAllPackages([]);
 end;
@@ -1453,7 +1442,7 @@ var
   end;
 
 begin
-  WriteLn('*** LazProfiler: RestoreSources');
+  DebugLn('*** LazProfiler: RestoreSources');
 
   BuildFileList(cBackupExtension, False);
 
@@ -1511,7 +1500,7 @@ end;
 
 procedure TProfilerAddon.RunFinished(Sender: TObject);
 begin
-  //WriteLn('*** LazProfiler: RunFinished');
+  //DebugLn('*** LazProfiler: RunFinished');
   LoadResult;
   if fProfiling then begin
     // enable CheckFilesOnDisk
@@ -1534,7 +1523,7 @@ var
   lTargetFileName: String;
 begin
   Result := mrOK;
-  //WriteLn('*** LazProfiler: ProjectOpened: '+pProject.ProjectInfoFile);
+  //DebugLn('*** LazProfiler: ProjectOpened: '+pProject.ProjectInfoFile);
   fProject := pProject;
   fProcList.Clear;
   fOldProcList.Clear;
@@ -1563,7 +1552,7 @@ begin
     Assigned(ProfilerWindow)
     and ProfilerWindow.DataChanged
   ) then begin
-    //WriteLn('*** LazProfiler: ProjectClose');
+    //DebugLn('*** LazProfiler: ProjectClose');
     fNeedsRebuild := pfAlwaysBuild in AProject.Flags;
     SaveXML(fTargetDir + fTargetName + cSettingExtension);
   end;
