@@ -1430,7 +1430,7 @@ begin
   Lock;
   try
     if pProcID >= fProcList.Count then begin
-      WriteLn('TLazProfiler.EnterProfiling: pProcID >= fProcList.Count: '+IntToStr(pProcID)+'>='+IntToStr(fProcList.Count));
+      //WriteLn('TLazProfiler.EnterProfiling: pProcID >= fProcList.Count: '+IntToStr(pProcID)+'>='+IntToStr(fProcList.Count));
       Exit;
     end;
     lIdx := ThreadIndex(ThreadID);
@@ -1458,11 +1458,11 @@ begin
     lCurStackFrame := fCurStackFrame[lIdx];
     lCurStackFrame.fTicksEnd := lTimeStamp;
     if pProcID >= fProcList.Count then begin
-      WriteLn('TLazProfiler.ExitProfiling: pProcID >= fProcList.Count: '+IntToStr(pProcID)+'>='+IntToStr(fProcList.Count));
+      //WriteLn('TLazProfiler.ExitProfiling: pProcID >= fProcList.Count: '+IntToStr(pProcID)+'>='+IntToStr(fProcList.Count));
       Exit;
     end;
-    if lCurStackFrame.fPasProc <> fProcList[pProcID] then
-      WriteLn('TLazProfiler.ExitProfiling: Stack mismatch: '+lCurStackFrame.fPasProc.Name+'<->'+fProcList[pProcID].name);
+//    if lCurStackFrame.fPasProc <> fProcList[pProcID] then
+//      WriteLn('TLazProfiler.ExitProfiling: Stack mismatch: '+lCurStackFrame.fPasProc.Name+'<->'+fProcList[pProcID].name);
     if fPauseCount[lIdx] = 0 then begin
       lCurStackFrame.fOff := fOffTicks[lIdx];
       fOffTicks[lIdx] := 0;
@@ -1479,7 +1479,7 @@ end;
 procedure TLazProfiler.StartProfiling;
 begin
   fRunning := True;
-  WriteLn('### LazProfiler: Start');
+ // WriteLn('### LazProfiler: Start');
 end;
 
 procedure TLazProfiler.PauseProfiling;
@@ -1515,7 +1515,7 @@ end;
 procedure TLazProfiler.StopProfiling;
 begin
   fRunning := False;
-  WriteLn('### LazProfiler: Stop');
+  //WriteLn('### LazProfiler: Stop');
 end;
 
 constructor TLazProfiler.Create(pProgramm: String);
@@ -1578,9 +1578,9 @@ begin
   SetLength(fOffTicks, 0);
   fTimer.Free;
   if fTicks > 0 then
-    fProcList.Convert(fTicks)
-  else
-    WriteLn('*** LazProfiler: fTicks='+IntToStr(fTicks));
+    fProcList.Convert(fTicks);
+//  else
+//    WriteLn('*** LazProfiler: fTicks='+IntToStr(fTicks));
   if fLoaded then
     SaveXML(fName + cSettingExtension);
   DoneCriticalSection(fLock);

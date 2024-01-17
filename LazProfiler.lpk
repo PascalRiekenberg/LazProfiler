@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <Package Version="4">
+  <Package Version="5">
     <PathDelim Value="\"/>
     <Name Value="LazProfiler"/>
     <Type Value="DesignTime"/>
@@ -9,6 +9,7 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
+        <OtherUnitFiles Value=".;C:\Lazarus_Profile\config_lazarus\onlinepackagemanager\packages\epiktimer\;.;C:\Lazarus_Profile\config_lazarus\onlinepackagemanager\packages\epiktimer\;.;C:\Lazarus_Profile\config_lazarus\onlinepackagemanager\packages\epiktimer\;.;C:\Lazarus_Profile\config_lazarus\onlinepackagemanager\packages\epiktimer\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Other>
@@ -16,7 +17,7 @@
       </Other>
     </CompilerOptions>
     <Description Value="LazProfiler is an IDE addon for profiling your programs with one click."/>
-    <Version Minor="3"/>
+    <Version Minor="4"/>
     <Files Count="5">
       <Item1>
         <Filename Value="LazProfilerAddon.pas"/>
@@ -40,6 +41,7 @@
         <UnitName Value="LazProfilerCore"/>
       </Item5>
     </Files>
+    <CompatibilityMode Value="True"/>
     <RequiredPkgs Count="6">
       <Item1>
         <PackageName Value="etpackage"/>
