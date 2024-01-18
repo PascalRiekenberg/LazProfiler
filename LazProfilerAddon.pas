@@ -36,20 +36,18 @@ type
 
   TLPFile = class
   private
-    fFilename,
-    fFilenameUp,
-    fPackageName: String;
-    fChanged: Boolean;
+    fFilename, fFilenameUp, fPackageName: string;
+    fChanged: boolean;
     fText: TStringList;
-    fSaved: Boolean;
+    fSaved: boolean;
   protected
   public
-    constructor Create(pFilename, pPackageName: String);
+    constructor Create(pFilename, pPackageName: string);
     destructor Destroy; override;
-    function Save: Boolean;
-    property Filename: String read fFilename;
-    property FilenameUp: String read fFilenameUp;
-    property PackageName: String read fPackageName;
+    function Save: boolean;
+    property Filename: string read fFilename;
+    property FilenameUp: string read fFilenameUp;
+    property PackageName: string read fPackageName;
     property Changed: boolean read fChanged write fChanged;
     property Text: TStringList read fText;
   end;
@@ -61,7 +59,7 @@ type
   private
   protected
   public
-    function IndexOf(pFilename: String): SizeInt; overload;
+    function IndexOf(pFilename: string): SizeInt; overload;
   end;
 
 
@@ -75,11 +73,12 @@ type
   public
     constructor Create(pProc: TLPPasProc);
     procedure UpdateCheckState;
-    function CellText(Column: TColumnIndex; TextType: TVSTTextType): String; override;
-    function ImageIndex(pColumn: TColumnIndex): Integer; override;
+    function CellText(Column: TColumnIndex; TextType: TVSTTextType): string; override;
+    function ImageIndex(pColumn: TColumnIndex): integer; override;
     procedure InitNode(pVST: TBaseVirtualTree; pNode: PVirtualNode); override;
     property PasProc: TLPPasProc read fPasProc;
   end;
+
   PLPvtvProc = ^TLPvtvPasProc;
 
 
@@ -90,10 +89,10 @@ type
     fPasClass: TLPPasClass;
   protected
   public
-    constructor Create(pNameOfClass, pUnitName, pFileName, pPackageName: String);
+    constructor Create(pNameOfClass, pUnitName, pFileName, pPackageName: string);
     destructor Destroy; override;
-    function CellText(Column: TColumnIndex; TextType: TVSTTextType): String; override;
-    function ImageIndex(pColumn: TColumnIndex): Integer; override;
+    function CellText(Column: TColumnIndex; TextType: TVSTTextType): string; override;
+    function ImageIndex(pColumn: TColumnIndex): integer; override;
     function InitialStates: TVirtualNodeInitStates; override;
     procedure UpdateExpanded; override;
     property PasClass: TLPPasClass read fPasClass write fPasClass;
@@ -107,10 +106,10 @@ type
     fPasUnit: TLPPasUnit;
   protected
   public
-    constructor Create(pUnitName, pFileName, pPackageName: String);
+    constructor Create(pUnitName, pFileName, pPackageName: string);
     destructor Destroy; override;
-    function CellText(Column: TColumnIndex; TextType: TVSTTextType): String; override;
-    function ImageIndex(pColumn: TColumnIndex): Integer; override;
+    function CellText(Column: TColumnIndex; TextType: TVSTTextType): string; override;
+    function ImageIndex(pColumn: TColumnIndex): integer; override;
     function InitialStates: TVirtualNodeInitStates; override;
     procedure UpdateExpanded; override;
     property PasUnit: TLPPasUnit read fPasUnit write fPasUnit;
@@ -124,10 +123,10 @@ type
     fPasPackage: TLPPasPackage;
   protected
   public
-    constructor Create(pPackageName: String);
+    constructor Create(pPackageName: string);
     destructor Destroy; override;
-    function CellText(Column: TColumnIndex; TextType: TVSTTextType): String; override;
-    function ImageIndex(pColumn: TColumnIndex): Integer; override;
+    function CellText(Column: TColumnIndex; TextType: TVSTTextType): string; override;
+    function ImageIndex(pColumn: TColumnIndex): integer; override;
     function InitialStates: TVirtualNodeInitStates; override;
     procedure UpdateExpanded; override;
     property PasPackage: TLPPasPackage read fPasPackage write fPasPackage;
@@ -138,41 +137,44 @@ type
 
   TProfilerAddon = class(TCustomLazProfiler)
   private
-    fProfiling: Boolean;
+    fProfiling: boolean;
     fProject: TLazProject;
-    fSourcesInstrumented: Boolean;
-    fFileList,
-    fIncludeList: TLPFileList;
-    fProjectDir: String;
-    fIncludePath: String;
-    fTargetDir: String;
-    fTargetName: String;
-    fOldModified: Boolean;
-    procedure BuildFileList(pExtensionMask: String; pCheckForBelongsToProject: Boolean);
-    function AddProc(pName: String; pToken: Integer; pNameOfClass, pUnitName, pFileName, pPackageName: String; pRow: Integer): Integer;
-    procedure SetActive(pActive: Boolean);
+    fSourcesInstrumented: boolean;
+    fFileList, fIncludeList: TLPFileList;
+    fProjectDir: string;
+    fIncludePath: string;
+    fTargetDir: string;
+    fTargetName: string;
+    fOldModified: boolean;
+    procedure BuildFileList(pExtensionMask: string; pCheckForBelongsToProject: boolean);
+    function AddProc(pName: string; pToken: integer;
+      pNameOfClass, pUnitName, pFileName, pPackageName: string; pRow: integer): integer;
+    procedure SetActive(pActive: boolean);
   protected
-    fEpikTimerPath: String;
-    fLazProfilerPath: String;
-    fUnitOutputDirectory: String;
+    fEpikTimerPath: string;
+    fLazProfilerPath: string;
+    fUnitOutputDirectory: string;
     fOldPackageList: TLPPasPackageList;
     fOldUnitList: TLPPasUnitList;
     fOldClassList: TLPPasClassList;
     fOldProcList: TLPPasProcList;
     procedure ModifySettings;
-    function ParseSources(pInstrument: Boolean): Boolean;
-    function ParseSource(pFile: TLPFile; pInstrument: Boolean): Boolean;
+    function ParseSources(pInstrument: boolean): boolean;
+    function ParseSource(pFile: TLPFile; pInstrument: boolean): boolean;
     procedure RestoreModifiedSettings;
     procedure RestoreSources;
     procedure RestoreSource(pFile: TLPFile);
-    function ProjectRunWithoutDebugBuilding(Sender: TObject; var Handled: boolean): TModalResult;
-    procedure ProjectBuildingFinished(Sender: TObject; BuildSuccessful: Boolean);
+    function ProjectRunWithoutDebugBuilding(Sender: TObject;
+      var Handled: boolean): TModalResult;
+    procedure ProjectBuildingFinished(Sender: TObject; BuildSuccessful: boolean);
     procedure RunFinished(Sender: TObject);
     procedure LoadResult;
     function ProjectOpened(Sender: TObject; pProject: TLazProject): TModalResult;
     function ProjectClose(Sender: TObject; AProject: TLazProject): TModalResult;
-    function SaveEditorFile(Sender: TObject; aFile: TLazProjectFile; SaveStep: TSaveEditorFileStep; TargetFilename: string): TModalResult;
-    procedure CreateProfilerWindow(Sender: TObject; pFormName: string; var pForm: TCustomForm; DoDisableAutoSizing: boolean);
+    function SaveEditorFile(Sender: TObject; aFile: TLazProjectFile;
+      SaveStep: TSaveEditorFileStep; TargetFilename: string): TModalResult;
+    procedure CreateProfilerWindow(Sender: TObject; pFormName: string;
+      var pForm: TCustomForm; DoDisableAutoSizing: boolean);
     procedure UpdateUI;
   public
     constructor Create;
@@ -181,7 +183,7 @@ type
     procedure ShowProfilerWindow(Sender: TObject);
     procedure CleanUp(Sender: TObject);
     property Project: TLazProject read fProject;
-    property Active: Boolean read fActive write SetActive;
+    property Active: boolean read fActive write SetActive;
   end;
 
 
@@ -221,12 +223,13 @@ type
   TBlockEntry = class
   public
     token: TToken;
-    name, nameofclass: String;
-    level: Integer;
+    Name, nameofclass: string;
+    level: integer;
     parent: TBlockEntry;
-    gap: String;
-    procid: Integer;
-    constructor Create(pToken: TToken; pName: String; pLevel: Integer; pParent: TBlockEntry);
+    gap: string;
+    procid: integer;
+    constructor Create(pToken: TToken; pName: string; pLevel: integer;
+      pParent: TBlockEntry);
     destructor Destroy; override;
   end;
 
@@ -239,12 +242,12 @@ const
   cProfilerFormName = 'LazProfilerForm';
   cAutoRestore = True;
 
-function TokenToStr(TokenType: TToken): String;
+function TokenToStr(TokenType: TToken): string;
 begin
   WriteStr(Result, TokenType);
 end;
 
-function CheckStateToStr(pCheckState: TCheckState): String;
+function CheckStateToStr(pCheckState: TCheckState): string;
 begin
   WriteStr(Result, pCheckState);
 end;
@@ -252,10 +255,11 @@ end;
 
 procedure Register;
 var
-  lIdx: Integer;
+  lIdx: integer;
 begin
   RunCmd := TIDEMenuCommand.Create('itmRunMenuRunWithProfiler');
-  with RunCmd do begin
+  with RunCmd do
+  begin
     Caption := 'Profile';
     OnClick := @Addon.Start;
   end;
@@ -265,8 +269,11 @@ begin
 
   itmRunnning.Insert(lIdx + 1, RunCmd);
 
-  RegisterIDEMenuCommand(itmViewMainWindows, 'itmViewMainWindowsProfiler','Profiler (Results and Configuration)',@Addon.ShowProfilerWindow, nil);
-  RegisterIDEMenuCommand(itmRunnning, 'itmRunMenuProfilerCleanUp','Cleanup Profiler and restore original files',@Addon.CleanUp, nil);
+  RegisterIDEMenuCommand(itmViewMainWindows,
+    'itmViewMainWindowsProfiler', 'Profiler (Results and Configuration)',
+    @Addon.ShowProfilerWindow, nil);
+  RegisterIDEMenuCommand(itmRunnning, 'itmRunMenuProfilerCleanUp',
+    'Cleanup Profiler and restore original files', @Addon.CleanUp, nil);
   LazarusIDE.AddHandlerOnRunWithoutDebugBuilding(@Addon.ProjectRunWithoutDebugBuilding);
   LazarusIDE.AddHandlerOnProjectBuildingFinished(@Addon.ProjectBuildingFinished);
   LazarusIDE.AddHandlerOnRunFinished(@Addon.RunFinished); { needs trunk 56254 }
@@ -274,13 +281,14 @@ begin
   LazarusIDE.AddHandlerOnProjectClose(@Addon.ProjectClose);
   LazarusIDE.AddHandlerOnSaveEditorFile(@Addon.SaveEditorFile);
 
-  IDEWindowCreators.Add(cProfilerFormName, nil, @Addon.CreateProfilerWindow, '100', '10%', '+300', '+50%');
+  IDEWindowCreators.Add(cProfilerFormName, nil, @Addon.CreateProfilerWindow,
+    '100', '10%', '+300', '+50%');
 end;
 
 
 { TLPvtvPasPackage }
 
-constructor TLPvtvPasPackage.Create(pPackageName: String);
+constructor TLPvtvPasPackage.Create(pPackageName: string);
 begin
   inherited Create(TLPPasProc.Create('', 0, '', '', '', pPackageName, 1));
 end;
@@ -291,18 +299,20 @@ begin
   inherited Destroy;
 end;
 
-function TLPvtvPasPackage.CellText(Column: TColumnIndex; TextType: TVSTTextType): String;
+function TLPvtvPasPackage.CellText(Column: TColumnIndex; TextType: TVSTTextType): string;
 begin
-  if Column = 0 then begin
+  if Column = 0 then
+  begin
     if fPasProc.PackageIsProject then
       CellText := Addon.Project.Title
     else
       CellText := fPasProc.PackageName;
-  end else
+  end
+  else
     CellText := '';
 end;
 
-function TLPvtvPasPackage.ImageIndex(pColumn: TColumnIndex): Integer;
+function TLPvtvPasPackage.ImageIndex(pColumn: TColumnIndex): integer;
 begin
   if pColumn = 0 then
     if fPasProc.PackageIsProject then
@@ -316,9 +326,11 @@ end;
 function TLPvtvPasPackage.InitialStates: TVirtualNodeInitStates;
 begin
   Result := inherited InitialStates;
-  if not Assigned(fPasPackage) then begin
-    WriteLn('!!! TLPvtvPasPackage: ', fPasProc.PackageName, ' fPasPackage=Nil');
-  end else
+  if not Assigned(fPasPackage) then
+  begin
+    //    WriteLn('!!! TLPvtvPasPackage: ', fPasProc.PackageName, ' fPasPackage=Nil');
+  end
+  else
   if fPasPackage.Expanded then
     Result := Result + [ivsExpanded];
 end;
@@ -331,7 +343,7 @@ end;
 
 { TLPvtvPasUnit }
 
-constructor TLPvtvPasUnit.Create(pUnitName, pFileName, pPackageName: String);
+constructor TLPvtvPasUnit.Create(pUnitName, pFileName, pPackageName: string);
 begin
   inherited Create(TLPPasProc.Create('', 0, '', pUnitName, pFileName, pPackageName, 1));
 end;
@@ -342,7 +354,7 @@ begin
   inherited Destroy;
 end;
 
-function TLPvtvPasUnit.CellText(Column: TColumnIndex; TextType: TVSTTextType): String;
+function TLPvtvPasUnit.CellText(Column: TColumnIndex; TextType: TVSTTextType): string;
 begin
   if Column = 0 then
     CellText := fPasProc.UnitName
@@ -350,7 +362,7 @@ begin
     CellText := '';
 end;
 
-function TLPvtvPasUnit.ImageIndex(pColumn: TColumnIndex): Integer;
+function TLPvtvPasUnit.ImageIndex(pColumn: TColumnIndex): integer;
 begin
   if pColumn = 0 then
     Result := 0
@@ -361,9 +373,11 @@ end;
 function TLPvtvPasUnit.InitialStates: TVirtualNodeInitStates;
 begin
   Result := inherited InitialStates;
-  if not Assigned(fPasUnit) then begin
-    WriteLn('!!! TLPvtvPasUnit: ', fPasProc.UnitName, ' fPasUnit=Nil');
-  end else
+  if not Assigned(fPasUnit) then
+  begin
+    //WriteLn('!!! TLPvtvPasUnit: ', fPasProc.UnitName, ' fPasUnit=Nil');
+  end
+  else
   if fPasUnit.Expanded then
     Result := Result + [ivsExpanded];
 end;
@@ -376,12 +390,13 @@ end;
 
 { TLPFileList }
 
-function TLPFileList.IndexOf(pFilename: String): SizeInt;
+function TLPFileList.IndexOf(pFilename: string): SizeInt;
 var
-  i: Integer;
+  i: integer;
 begin
   pFilename := UpperCase(pFilename);
-  for i := 0 to Count - 1 do begin
+  for i := 0 to Count - 1 do
+  begin
     if UpperCase(Items[i].Filename) = pFilename then
       Exit(i);
   end;
@@ -391,7 +406,7 @@ end;
 
 { TLPFile }
 
-constructor TLPFile.Create(pFilename, pPackageName: String);
+constructor TLPFile.Create(pFilename, pPackageName: string);
 begin
   fFilename := pFilename;
   fFilenameUp := UpperCase(pFilename);
@@ -407,26 +422,39 @@ begin
   inherited Destroy;
 end;
 
-function TLPFile.Save: Boolean;
+function TLPFile.Save: boolean;
 begin
-  if not fSaved then begin
-    if FileExists(fFileName + cBackupExtension) then begin
-      IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: backup file already exists: ' + fFileName + cBackupExtension, fFileName, 1, 1); // CurTokenPos needs FPC trunk 37235
+  if not fSaved then
+  begin
+    if FileExists(fFileName + cBackupExtension) then
+    begin
+      IDEMessagesWindow.AddCustomMessage(mluFatal,
+        'LazProfiler: backup file already exists: ' + fFileName + cBackupExtension,
+        fFileName, 1, 1); // CurTokenPos needs FPC trunk 37235
       Exit(False);
-    end else begin
+    end
+    else
+    begin
       { make backup }
       RenameFile(fFileName, fFileName + cBackupExtension);
-      if FileExists(fFileName) then begin
-        IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: could not create backup file: ' + fFileName + cBackupExtension, fFileName, 1, 1); // CurTokenPos needs FPC trunk 37235
+      if FileExists(fFileName) then
+      begin
+        IDEMessagesWindow.AddCustomMessage(mluFatal,
+          'LazProfiler: could not create backup file: ' + fFileName + cBackupExtension,
+          fFileName, 1, 1); // CurTokenPos needs FPC trunk 37235
         Exit(False);
-      end else begin
+      end
+      else
+      begin
         { write modified source }
         fText.SaveToFile(fFileName);
         fSaved := True;
       end;
     end;
-  end else begin
-    WriteLn('*** LazProfiler: !!! re-saving ', fFilename);
+  end
+  else
+  begin
+    //WriteLn('*** LazProfiler: !!! re-saving ', fFilename);
     fText.SaveToFile(fFileName);
   end;
   Result := True;
@@ -435,9 +463,11 @@ end;
 
 { TLPvtvPasClass }
 
-constructor TLPvtvPasClass.Create(pNameOfClass, pUnitName, pFileName, pPackageName: String);
+constructor TLPvtvPasClass.Create(pNameOfClass, pUnitName, pFileName,
+  pPackageName: string);
 begin
-  inherited Create(TLPPasProc.Create('', 0, pNameOfClass, pUnitName, pFileName, pPackageName, 1));
+  inherited Create(TLPPasProc.Create('', 0, pNameOfClass, pUnitName,
+    pFileName, pPackageName, 1));
 end;
 
 destructor TLPvtvPasClass.Destroy;
@@ -446,7 +476,7 @@ begin
   inherited Destroy;
 end;
 
-function TLPvtvPasClass.CellText(Column: TColumnIndex; TextType: TVSTTextType): String;
+function TLPvtvPasClass.CellText(Column: TColumnIndex; TextType: TVSTTextType): string;
 begin
   if Column = 0 then
     CellText := fPasProc.NameOfClass
@@ -454,7 +484,7 @@ begin
     CellText := '';
 end;
 
-function TLPvtvPasClass.ImageIndex(pColumn: TColumnIndex): Integer;
+function TLPvtvPasClass.ImageIndex(pColumn: TColumnIndex): integer;
 begin
   if pColumn = 0 then
     Result := 1
@@ -465,9 +495,11 @@ end;
 function TLPvtvPasClass.InitialStates: TVirtualNodeInitStates;
 begin
   Result := inherited InitialStates;
-  if not Assigned(fPasClass) then begin
-    WriteLn('!!! TLPvtvPasClass: ', fPasProc.NameOfClass, ' fPasClass=Nil');
-  end else
+  if not Assigned(fPasClass) then
+  begin
+    //WriteLn('!!! TLPvtvPasClass: ', fPasProc.NameOfClass, ' fPasClass=Nil');
+  end
+  else
   if fPasClass.Expanded then
     Result := Result + [ivsExpanded];
 end;
@@ -482,22 +514,27 @@ end;
 
 procedure TLPvtvPasProc.UpdateCheckState;
 var
-  i: Integer;
-  lChecked: Boolean;
+  i: integer;
+  lChecked: boolean;
   lChild: TLPvtvPasProc;
 
-  function Check(pObj: TLPvtvPasProc): Boolean;
+  function Check(pObj: TLPvtvPasProc): boolean;
   var
-    i: Integer;
+    i: integer;
   begin
     Result := True;
-    if pObj.Childs.Count = 0 then begin
-      if pObj.PasProc.Instrument <> lChecked then begin
+    if pObj.Childs.Count = 0 then
+    begin
+      if pObj.PasProc.Instrument <> lChecked then
+      begin
         fNode^.CheckState := csMixedNormal;
         Exit(False);
       end;
-    end else begin
-      for i := 0 to pObj.Childs.Count - 1 do begin
+    end
+    else
+    begin
+      for i := 0 to pObj.Childs.Count - 1 do
+      begin
         if not Check(TLPvtvPasProc(pObj.Childs[i])) then
           Exit(False);
       end;
@@ -508,10 +545,12 @@ begin
   if fChilds.Count = 0 then
     Exit;
 
-  lChild := Self; while lChild.Childs.Count > 0 do lChild := TLPvtvPasProc(lChild.Childs[0]);
+  lChild := Self;
+  while lChild.Childs.Count > 0 do lChild := TLPvtvPasProc(lChild.Childs[0]);
   lChecked := lChild.PasProc.Instrument;
 
-  if not Check(Self) then begin
+  if not Check(Self) then
+  begin
     fVst.InvalidateNode(fNode);
     Exit;
   end;
@@ -526,12 +565,13 @@ end;
 procedure TLPvtvPasProc.SetCheckState(pCheckState: TCheckState);
 var
   lParent: TLPvtvPasProc;
-  i: Integer;
+  i: integer;
 begin
   inherited SetCheckState(pCheckState);
   fPasProc.Instrument := pCheckState = csCheckedNormal;
   lParent := TLPvtvPasProc(fParent);
-  while Assigned(lParent) do begin
+  while Assigned(lParent) do
+  begin
     TLPvtvPasProc(lParent).UpdateCheckState;
     lParent := TLPvtvPasProc(lParent.Parent);
   end;
@@ -544,13 +584,17 @@ begin
   fPasProc := pProc;
 end;
 
-function TLPvtvPasProc.CellText(Column: TColumnIndex; TextType: TVSTTextType): String;
+function TLPvtvPasProc.CellText(Column: TColumnIndex; TextType: TVSTTextType): string;
 begin
   case Column of
     cNameCol: CellText := fPasProc.Name;
-    cClassCol: CellText := IfThen(TVirtualStringTree(fVst).Header.SortColumn in [1, 2, 3], '', fPasProc.NameOfClass);
-    cUnitCol: CellText := IfThen(TVirtualStringTree(fVst).Header.SortColumn in [1, 2, 3], '', fPasProc.UnitName);
-    cPackageCol: CellText := IfThen(TVirtualStringTree(fVst).Header.SortColumn in [1, 2, 3], '', IfThen(fPasProc.PackageName = '?', LazarusIDE.ActiveProject.Title, fPasProc.PackageName));
+    cClassCol: CellText := IfThen(TLazVirtualStringTree(fVst).Header.SortColumn in
+        [1, 2, 3], '', fPasProc.NameOfClass);
+    cUnitCol: CellText := IfThen(TLazVirtualStringTree(fVst).Header.SortColumn in
+        [1, 2, 3], '', fPasProc.UnitName);
+    cPackageCol: CellText := IfThen(TLazVirtualStringTree(fVst).Header.SortColumn in
+        [1, 2, 3], '', IfThen(fPasProc.PackageName = '?', LazarusIDE.ActiveProject.Title,
+        fPasProc.PackageName));
     cCountCol: CellText := fPasProc.CountStr;
     cPerNetCol: CellText := fPasProc.PerNetStr;
     cSumNetCol: CellText := fPasProc.SumNetStr;
@@ -561,18 +605,22 @@ begin
   end;
 end;
 
-function TLPvtvPasProc.ImageIndex(pColumn: TColumnIndex): Integer;
+function TLPvtvPasProc.ImageIndex(pColumn: TColumnIndex): integer;
 begin
-  if pColumn = 0 then begin
+  if pColumn = 0 then
+  begin
     case TToken(fPasProc.Kind) of
       tkconstructor: Result := 2;
-      tkdestructor:  Result := 3;
+      tkdestructor: Result := 3;
       tkoperator,
-      tkprocedure:   Result := 4;
-      tkfunction:    Result := 5;
-      else           Result := 6;
+      tkprocedure: Result := 4;
+      tkfunction: Result := 5;
+      else
+        Result := 6;
     end;
-  end else begin
+  end
+  else
+  begin
     Result := -1;
   end;
 end;
@@ -591,13 +639,13 @@ end;
 
 { TBlockEntry }
 
-constructor TBlockEntry.Create(pToken: TToken; pName: String;
-  pLevel: Integer; pParent: TBlockEntry);
+constructor TBlockEntry.Create(pToken: TToken; pName: string;
+  pLevel: integer; pParent: TBlockEntry);
 var
-  i: Integer;
+  i: integer;
 begin
   token := pToken;
-  name := pName;
+  Name := pName;
   nameofclass := '';
   level := pLevel;
   parent := pParent;
@@ -608,7 +656,7 @@ end;
 
 destructor TBlockEntry.Destroy;
 begin
-  name := '';
+  Name := '';
   gap := '';
   inherited Destroy;
 end;
@@ -616,42 +664,50 @@ end;
 
 { TProfilerAddon }
 
-procedure TProfilerAddon.BuildFileList(pExtensionMask: String; pCheckForBelongsToProject: Boolean);
+procedure TProfilerAddon.BuildFileList(pExtensionMask: string;
+  pCheckForBelongsToProject: boolean);
 var
-  lFPCSrcDir, lLazSrcDir, lPath: String;
+  lFPCSrcDir, lLazSrcDir, lPath: string;
   lPathList: TStringList;
-  lLengthFPCSrcDir, lLengthLazSrcDir, i, j: Integer;
+  lLengthFPCSrcDir, lLengthLazSrcDir, i, j: integer;
   lPkgList: TFPList;
   lUnits: TStrings;
 
-  function BelongsToProject(pFileName: string; var pPackageName: String): Boolean;
+  function BelongsToProject(pFileName: string; var pPackageName: string): boolean;
   var
     Owners: TFPList;
-    i: Integer;
+    i: integer;
     o: TObject;
   begin
     Result := False;
     pPackageName := '?';
     Owners := PackageEditingInterface.GetPossibleOwnersOfUnit(pFileName, []);
-    if not Assigned(Owners) then begin
+    if not Assigned(Owners) then
+    begin
       // unit is not directly associated with a project/package
       // maybe the unit was for some reason not added, but is reachable
       // search in all unit paths of all projects/packages
       // Beware: This can lead to false hits
-      Owners:=PackageEditingInterface.GetPossibleOwnersOfUnit(pFileName, [piosfExcludeOwned,piosfIncludeSourceDirectories]);
+      Owners := PackageEditingInterface.GetPossibleOwnersOfUnit(pFileName,
+        [piosfExcludeOwned, piosfIncludeSourceDirectories]);
     end;
     if not Assigned(Owners) then
       Exit;
     try
       //debugln('*** LazProfiler Owner of ' + pFileName);
-      for i := 0 to Owners.Count - 1 do begin
+      for i := 0 to Owners.Count - 1 do
+      begin
         o := TObject(Owners[i]);
-        if o is TIDEPackage then begin
-          pPackageName := ExtractFileNameWithoutExt(ExtractFilenameOnly(TIDEPackage(o).Filename));
+        if o is TIDEPackage then
+        begin
+          pPackageName := ExtractFileNameWithoutExt(
+            ExtractFilenameOnly(TIDEPackage(o).Filename));
           //debugln('    ' + pPackageName);
           Exit(True);
-        end else if (o is TLazProject)
-        and (TLazProject(o).ProjectInfoFile = fProject.ProjectInfoFile) then begin
+        end
+        else if (o is TLazProject) and (TLazProject(o).ProjectInfoFile =
+          fProject.ProjectInfoFile) then
+        begin
           //pPackageName := TLazProject(o).Title;
           //debugln('    ' + pPackageName);
           Exit(True);
@@ -662,20 +718,19 @@ var
     end;
   end;
 
-  procedure AddFile(pFileName: String);
+  procedure AddFile(pFileName: string);
   var
-    lPackageName: String;
+    lPackageName: string;
   begin
     //DebugLn('*** LazProfiler:   testing ', ExtractFileName(pFileName));
-    if (fFileList.IndexOf(pFileName) >= 0)
-    or (pCheckForBelongsToProject
-    and not BelongsToProject(pFileName, lPackageName)) then
+    if (fFileList.IndexOf(pFileName) >= 0) or
+      (pCheckForBelongsToProject and not BelongsToProject(pFileName, lPackageName)) then
       Exit;
     //DebugLn('*** LazProfiler:     added ', lPackageName, ' - ', ExtractFileName(pFileName));
     fFileList.Add(TLPFile.Create(pFileName, lPackageName));
   end;
 
-  procedure ScanDir(pDir, pExtensionMask: String);
+  procedure ScanDir(pDir, pExtensionMask: string);
   var
     Info: TSearchRec;
     ExtensionList: TStrings;
@@ -692,11 +747,13 @@ var
     if FindFirst(pDir + AllFilesMask, faAnyFile and faDirectory, Info) = 0 then
     begin
       repeat
-        if ((Info.Attr and faDirectory) = faDirectory) then begin
-          if (Info.Name <> '.')
-          and (Info.Name <> '..') then
+        if ((Info.Attr and faDirectory) = faDirectory) then
+        begin
+          if (Info.Name <> '.') and (Info.Name <> '..') then
             ScanDir(pDir + Info.Name, pExtensionMask);
-        end else begin
+        end
+        else
+        begin
           if ExtensionList.IndexOf(ExtractFileExt(Info.Name)) <> -1 then
             AddFile(pDir + Info.Name);
         end;
@@ -709,16 +766,16 @@ var
 
   procedure CheckDir(pList: TStringList);
   var
-    lPath, lPathUp: String;
-    i: Integer;
+    lPath, lPathUp: string;
+    i: integer;
   begin
-    for i := 0 to pList.Count - 1 do begin
+    for i := 0 to pList.Count - 1 do
+    begin
       lPath := lPathList[i];
       lPathUp := UpperCase(lPath);
-      if (lPathUp <> '')
-      and (LeftStr(lPathUp, lLengthFPCSrcDir) <> lFPCSrcDir)
-      and (LeftStr(lPathUp, lLengthLazSrcDir) <> lLazSrcDir) then
-        ScanDir(lPath, pExtensionMask)
+      if (lPathUp <> '') and (LeftStr(lPathUp, lLengthFPCSrcDir) <>
+        lFPCSrcDir) and (LeftStr(lPathUp, lLengthLazSrcDir) <> lLazSrcDir) then
+        ScanDir(lPath, pExtensionMask);
     end;
   end;
 
@@ -735,34 +792,42 @@ begin
   IDEMacros.SubstituteMacros(lLazSrcDir);
   lLazSrcDir := UpperCase(lLazSrcDir);
   lLengthLazSrcDir := length(lLazSrcDir);
-
   { scan pathes }
   lPathList := TStringList.Create;
   try
     //lPathList.DelimitedText := CodeToolBoss.GetUnitPathForDirectory('');
     PackageEditingInterface.GetRequiredPackages(fProject, lPkgList, [pirNotRecursive]);
-    for i := 0 to lPkgList.Count - 1 do begin
-      //debugln('    Package: ' + TIDEPackage(lPkgList[i]).Filename);
-      lPath := ExtractFilePath(TIDEPackage(lPkgList[i]).Filename);
-      if lPathList.IndexOf(lPath) = -1 then
-        lPathList.Add(lPath);
-      lUnits := LazarusIDE.FindUnitsOfOwner(TIDEPackage(lPkgList[i]), [fuooListed,fuooUsed]); // add fuooPackages to include units from packages
-      try
-        for j:=0 to lUnits.Count-1 do begin
-          //debugln('      Unit: ' + lUnits[j]);
-          lPath := ExtractFilePath(lUnits[j]);
-          if lPathList.IndexOf(lPath) = -1 then
-            lPathList.Add(lPath);
+    if lPkgList <> nil then
+    begin
+      for i := 0 to lPkgList.Count - 1 do
+      begin
+        //debugln('    Package: ' + TIDEPackage(lPkgList[i]).Filename);
+        lPath := ExtractFilePath(TIDEPackage(lPkgList[i]).Filename);
+        if lPathList.IndexOf(lPath) = -1 then
+          lPathList.Add(lPath);
+        lUnits := LazarusIDE.FindUnitsOfOwner(TIDEPackage(lPkgList[i]),
+          [fuooListed, fuooUsed]); // add fuooPackages to include units from packages
+        try
+          for j := 0 to lUnits.Count - 1 do
+          begin
+            //debugln('      Unit: ' + lUnits[j]);
+            lPath := ExtractFilePath(lUnits[j]);
+            if lPathList.IndexOf(lPath) = -1 then
+              lPathList.Add(lPath);
+          end;
+        finally
+          lUnits.Free;
         end;
-      finally
-        lUnits.Free;
       end;
+      lPkgList.Free;
     end;
-    lPkgList.Free;
 
-    lUnits := LazarusIDE.FindUnitsOfOwner(fProject,[fuooListed,fuooUsed]); // add fuooPackages to include units from packages
+    lUnits := LazarusIDE.FindUnitsOfOwner(fProject, [fuooListed, fuooUsed]);
+    // add fuooPackages to include units from packages
+    if lUnits <> nil then
     try
-      for i:=0 to lUnits.Count-1 do begin
+      for i := 0 to lUnits.Count - 1 do
+      begin
         //debugln('    Unit: ' + lUnits[i]);
         lPath := ExtractFilePath(lUnits[i]);
         if lPathList.IndexOf(lPath) = -1 then
@@ -772,6 +837,7 @@ begin
       lUnits.Free;
     end;
 
+
     { scan sources}
     CheckDir(lPathList);
   finally
@@ -779,26 +845,29 @@ begin
   end;
 end;
 
-function TProfilerAddon.AddProc(pName: String; pToken: Integer; pNameOfClass,
-  pUnitName, pFileName, pPackageName: String; pRow: Integer): Integer;
+function TProfilerAddon.AddProc(pName: string; pToken: integer;
+  pNameOfClass, pUnitName, pFileName, pPackageName: string; pRow: integer): integer;
 var
   lPasPackage: TLPPasPackage;
   lPasUnit: TLPPasUnit;
   lPasClass: TLPPasClass;
   lPasProc: TLPPasProc;
-  lUpName, lUpFileName, lUpNameOfClass: String;
-  i: Integer;
+  lUpName, lUpFileName, lUpNameOfClass: string;
+  i: integer;
 begin
   //DebugLn('    AddProc(%s, %s)', [pName, pNameOfClass]);
-
   // package
-  lPasPackage := Nil;
+  lPasPackage := nil;
   i := fPackageList.IndexOf(pPackageName);
-  if i >= 0 then begin
+  if i >= 0 then
+  begin
     lPasPackage := fPackageList[i];
-  end else begin
+  end
+  else
+  begin
     i := fOldPackageList.IndexOf(pPackageName);
-    if i >= 0 then begin
+    if i >= 0 then
+    begin
       lPasPackage := fOldPackageList.ExtractIndex(i);
     end;
     if not Assigned(lPasPackage) then
@@ -807,13 +876,17 @@ begin
   end;
 
   // unit
-  lPasUnit := Nil;
+  lPasUnit := nil;
   i := fUnitList.IndexOf(pUnitName, pFileName, pPackageName);
-  if i >= 0 then begin
+  if i >= 0 then
+  begin
     lPasUnit := fUnitList[i];
-  end else begin
+  end
+  else
+  begin
     i := fOldUnitList.IndexOf(pUnitName, pFileName, pPackageName);
-    if i >= 0 then begin
+    if i >= 0 then
+    begin
       lPasUnit := fOldUnitList.ExtractIndex(i);
     end;
     if not Assigned(lPasUnit) then
@@ -823,13 +896,17 @@ begin
   end;
 
   // class
-  lPasClass := Nil;
+  lPasClass := nil;
   i := fClassList.IndexOf(pNameOfClass, pUnitName, pFileName, pPackageName);
-  if i >= 0 then begin
+  if i >= 0 then
+  begin
     lPasClass := fClassList[i];
-  end else begin
+  end
+  else
+  begin
     i := fOldClassList.IndexOf(pNameOfClass, pUnitName, pFileName, pPackageName);
-    if i >= 0 then begin
+    if i >= 0 then
+    begin
       lPasClass := fOldClassList.ExtractIndex(i);
     end;
     if not Assigned(lPasClass) then
@@ -840,9 +917,10 @@ begin
   end;
 
   // proc
-  lPasProc := Nil;
+  lPasProc := nil;
   i := fOldProcList.IndexOf(pName, pNameOfClass, pUnitName, pFileName, pPackageName);
-  if i >= 0 then begin
+  if i >= 0 then
+  begin
     lPasProc := fOldProcList.ExtractIndex(i);
     lPasProc.Name := pName;
     lPasProc.Kind := pToken;
@@ -853,7 +931,8 @@ begin
     lPasProc.Init;
   end;
   if not Assigned(lPasProc) then
-    lPasProc := TLPPasProc.Create(pName, pToken, pNameOfClass, pUnitName, pFileName, pPackageName, pRow);
+    lPasProc := TLPPasProc.Create(pName, pToken, pNameOfClass, pUnitName,
+      pFileName, pPackageName, pRow);
   //if not Assigned(lPasUnit) then
   //  DebugLn('      lPasUnit=Nil');
   //if not Assigned(lPasClass) then
@@ -867,13 +946,14 @@ begin
     Result := -1;
 end;
 
-procedure TProfilerAddon.SetActive(pActive: Boolean);
+procedure TProfilerAddon.SetActive(pActive: boolean);
 begin
   if fActive = pActive then Exit;
   fActive := pActive;
   Screen.Cursor := crHourGlass;
   try
-    if fActive then begin
+    if fActive then
+    begin
       ParseSources(False);
     end;
     UpdateUI;
@@ -886,16 +966,21 @@ end;
 
 procedure TProfilerAddon.ModifySettings;
 var
-  i: Integer;
+  i: integer;
   lFiles: TStringList;
   lPkg: TIDEProjPackBase;
   lPasPkg: TLPPasPackage;
 begin
-  for i := 0 to fPackageList.Count - 1 do begin
+
+  for i := 0 to fPackageList.Count - 1 do
+  begin
     lPasPkg := fPackageList[i];
-    if lPasPkg.PackageIsProject then begin
+    if lPasPkg.PackageIsProject then
+    begin
       lPkg := fProject;
-    end else begin
+    end
+    else
+    begin
       lPkg := PackageEditingInterface.FindPackageWithName(lPasPkg.PackageName);
       //PackageEditingInterface.DoOpenPackageWithName(lPasPkg.PackageName, [pofDoNotOpenEditor], False);
     end;
@@ -920,28 +1005,28 @@ end;
 procedure TProfilerAddon.LoadResult;
 begin
   LoadFromFile(fTargetDir + fTargetName + cSettingExtension);
-  if fProcList.Count = 0 then begin
+  if fProcList.Count = 0 then
+  begin
     ParseSources(False);
   end;
   UpdateUI;
 end;
 
-function TProfilerAddon.ParseSources(pInstrument: Boolean): Boolean;
+function TProfilerAddon.ParseSources(pInstrument: boolean): boolean;
 var
-  i: Integer;
+  i: integer;
   lLRS: TLazarusResourceStream;
   lList4: TLPPasPackageList;
   lList3: TLPPasUnitList;
   lList2: TLPPasClassList;
   lList: TLPPasProcList;
   lPkg: TIDEPackage;
-
 begin
   Result := True;
   RestoreSources;
   if not fActive then
     Exit;
-  WriteLn('*** LazProfiler: ParseSources(', BoolToStr(pInstrument, True), ')');
+  //WriteLn('*** LazProfiler: ParseSources(', BoolToStr(pInstrument, True), ')');
 
   lList4 := fOldPackageList;
   fOldPackageList := fPackageList;
@@ -971,7 +1056,8 @@ begin
     if not ParseSource(fFileList[i], pInstrument) then
       Result := False;
 
-  if pInstrument then begin
+  if pInstrument then
+  begin
     for i := 0 to fIncludeList.Count - 1 do
       if fIncludeList[i].Changed then
         fIncludeList[i].Save;
@@ -982,35 +1068,43 @@ begin
   end;
 end;
 
-function TProfilerAddon.ParseSource(pFile: TLPFile; pInstrument: Boolean): Boolean;
+function TProfilerAddon.ParseSource(pFile: TLPFile; pInstrument: boolean): boolean;
 var
   lIncludeDirs: TStringList;
   fr: TFileResolver;
   pas: TPascalScanner;
   token, lPart, lLastBlockToken, lToken: TToken;
-  level, lProfilingChangeLevel, i: Integer;
+  level, lProfilingChangeLevel, i: integer;
   lImpUsesPos, lIntUsesPos, lImpPos, lIntPos: TPoint;
   lBlockStack: TBlocList;
   lBlock, lTempBlock, lStartProc: TBlockEntry;
-  lName, lParents, lUpComment, lNameOfClass, lUnitName, lIncludePath: String;
-  lProfiling: Boolean;
+  lName, lParents, lUpComment, lNameOfClass, lUnitName, lIncludePath: string;
+  lProfiling: boolean;
   lPos: SizeInt;
   lCurFile: TLPFile;
+  lCurrentToken: TToken;
 
   procedure CheckFile;
   var
-    lCurFileNameUp: String;
-    i: Integer;
+    lCurFileNameUp: string;
+    i: integer;
   begin
     lCurFileNameUp := UpperCase(pas.CurFilename);
-    if lCurFileNameUp <> UpperCase(lCurFile.Filename) then begin
-      if lCurFileNameUp = UpperCase(pFile.Filename) then begin
-        lCurFile := pFile
-      end else begin
+    if lCurFileNameUp <> UpperCase(lCurFile.Filename) then
+    begin
+      if lCurFileNameUp = UpperCase(pFile.Filename) then
+      begin
+        lCurFile := pFile;
+      end
+      else
+      begin
         i := fIncludeList.IndexOf(pas.CurFilename);
-        if i >= 0 then begin
+        if i >= 0 then
+        begin
           lCurFile := fIncludeList[i];
-        end else begin
+        end
+        else
+        begin
           //DebugLn('      Added Include %s', [pas.CurFilename]);
           lCurFile := TLPFile.Create(pas.CurFilename, pFile.PackageName);
           fIncludeList.Add(lCurFile);
@@ -1019,9 +1113,9 @@ var
     end;
   end;
 
-  procedure InsertEnter(pRow, pCol: Integer; pProcID: Integer);
+  procedure InsertEnter(pRow, pCol: integer; pProcID: integer);
   var
-    lLine: String;
+    lLine: string;
   begin
     CheckFile;
     lLine := lCurFile.Text[pRow];
@@ -1030,20 +1124,21 @@ var
     lCurFile.Changed := True;
   end;
 
-  procedure InsertExit(pRow, pCol: Integer; pProcID: Integer);
+  procedure InsertExit(pRow, pCol: integer; pProcID: integer);
   var
-    lLine: String;
+    lLine: string;
   begin
     CheckFile;
     lLine := lCurFile.Text[pRow];
-    Insert('finally LazProfiler.ExitProfiling(' + IntToStr(pProcID) + '); end; ', lLine, pCol);
+    Insert('finally LazProfiler.ExitProfiling(' + IntToStr(pProcID) +
+      '); end; ', lLine, pCol);
     lCurFile.Text[pRow] := lLine;
     lCurFile.Changed := True;
   end;
 
-  procedure InsertStart(pRow, pCol: Integer);
+  procedure InsertStart(pRow, pCol: integer);
   var
-    lLine: String;
+    lLine: string;
   begin
     CheckFile;
     lLine := lCurFile.Text[pRow];
@@ -1052,9 +1147,9 @@ var
     lCurFile.Changed := True;
   end;
 
-  procedure InsertStop(pRow, pCol: Integer);
+  procedure InsertStop(pRow, pCol: integer);
   var
-    lLine: String;
+    lLine: string;
   begin
     CheckFile;
     lLine := lCurFile.Text[pRow];
@@ -1063,9 +1158,9 @@ var
     lCurFile.Changed := True;
   end;
 
-  procedure InsertUnit(pRow, pCol: Integer);
+  procedure InsertUnit(pRow, pCol: integer);
   var
-    lLine: String;
+    lLine: string;
   begin
     CheckFile;
     lLine := lCurFile.Text[pRow];
@@ -1074,30 +1169,30 @@ var
     lCurFile.Changed := True;
   end;
 
-  procedure InsertUses(pRow, pCol: Integer);
+  procedure InsertUses(pRow, pCol: integer);
   begin
     CheckFile;
     lCurFile.Text.Insert(pRow, 'Uses LazProfilerRunTime;');
     lCurFile.Changed := True;
   end;
 
-  function InStruct: Boolean;
+  function InStruct: boolean;
   var
     b: TBlockEntry;
   begin
     Result := False;
     b := lBlock;
-    while Assigned(b)
-    and (Result = False) do begin
+    while Assigned(b) and (Result = False) do
+    begin
       if b.token in [tkclass, tkobject, tkrecord] then
         Result := True;
       b := b.parent;
     end;
   end;
 
-  procedure NewBlock(pToken: TToken; pName: String);
+  procedure NewBlock(pToken: TToken; pName: string);
   begin
-    inc(level);
+    Inc(level);
     if Assigned(lBlock) then
       lBlockStack.Push(lBlock);
     lBlock := TBlockEntry.Create(pToken, pName, level, lBlock);
@@ -1106,14 +1201,15 @@ var
 
   procedure PopBlock;
   begin
-    if Assigned(lBlock) then begin
+    if Assigned(lBlock) then
+    begin
       //Debugln('    - %s - %d - %s', [lBlock.name, lBlock.level, TokenToStr(lBlock.token)]);
       lBlock.Free;
       if lBlockStack.Count > 0 then
         lBlock := lBlockStack.Pop
       else
         lBlock := nil;
-      dec(level);
+      Dec(level);
     end;
   end;
 
@@ -1126,36 +1222,42 @@ var
 
   procedure DoProc;
   begin
-    if not (lPart = tkinterface)
-    and not InStruct then begin
+    if not (lPart = tkinterface) and not InStruct then
+    begin
       NewBlock(pas.CurToken, pas.CurTokenString);
-      while pas.FetchToken <> tkIdentifier do;
+      while pas.FetchToken <> tkIdentifier do ;
       lNameOfClass := '';
       lName := pas.CurTokenString;
-      while not (pas.FetchToken in [tkWhitespace, tkBraceOpen, tkSemicolon]) do case pas.CurToken of
-        tkDot: begin
-          if lNameOfClass = '' then begin
-            lNameOfClass := lName;
-            lName := '';
-          end else
-            lName := lName + '.'
+      while not (pas.FetchToken in [tkWhitespace, tkBraceOpen, tkSemicolon]) do
+        case pas.CurToken of
+          tkDot: begin
+            if lNameOfClass = '' then
+            begin
+              lNameOfClass := lName;
+              lName := '';
+            end
+            else
+              lName := lName + '.';
+          end;
+          tkIdentifier: begin
+            lName := lName + pas.CurTokenString;
+          end;
+          else
+          begin
+            lName := lName + Copy(TokenToStr(pas.CurToken), 3);
+          end;
         end;
-        tkIdentifier: begin
-          lName := lName + pas.CurTokenString;
-        end;
-        else begin
-          lName := lName + Copy(TokenToStr(pas.CurToken), 3);
-        end;
-      end;
       if lBlock.token = tkoperator then
         lName := 'operator ' + lName;
-      lBlock.name := lName;
+      lBlock.Name := lName;
       lBlock.nameofclass := lNameOfClass;
 
     end;
   end;
 
 begin
+  try
+
   Result := True;
   lCurFile := pFile;
   //WriteLn('  '+pFile.FileName);
@@ -1174,7 +1276,7 @@ begin
   end;
   pas := TPascalScanner.Create(fr);
   pas.TokenOptions := [toOperatorToken];
-  pas.AddDefine('fpc', true);
+  pas.AddDefine('fpc', True);
   lBlockStack := TBlocList.Create(False);
   try
     { parse and modify }
@@ -1188,194 +1290,281 @@ begin
     lStartProc := nil;
     lProfiling := True;
     lProfilingChangeLevel := 0;
+//    ShowMessage(pFile.FileName);
     pas.OpenFile(pFile.FileName);
-    while True do case pas.FetchToken of
-      tkunit, tkprogram: begin
-        while pas.FetchToken <> tkIdentifier do;
-        lUnitName := pas.CurTokenString;
-      end;
-      tkAsm: if Assigned(lBlock)
-      and not (lBlock.token in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) then
-        NewBlock(pas.CurToken, '');
-      tkBegin:
+//    ShowMessage('ParseSource4');
+    while True do
       begin
-        if Assigned(lBlock)
-        and (lBlock.token in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) then begin
-          if lProfiling then begin
-            { insert: lazprofiler.enter() }
-            lToken := lBlock.token;
-            lName := lBlock.name;
-            lNameOfClass := lBlock.nameofclass;
-            lTempBlock := lBlock.parent;
-            if Assigned(lTempBlock) and (lTempBlock.token in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) then begin
-              lParents := 'in '+lTempBlock.name;
-              lNameOfClass := lTempBlock.nameofclass;
-              lTempBlock := lTempBlock.parent;
-              while Assigned(lTempBlock) do begin
-                lParents := lTempBlock.name + ' in ' + lParents;
-                lNameOfClass := lTempBlock.nameofclass;
-                lTempBlock := lTempBlock.parent;
+        try
+          lCurrentToken := pas.FetchToken;
+          case lCurrentToken of
+            tkunit, tkprogram:
+              begin
+                while pas.FetchToken <> tkIdentifier do ;
+                lUnitName := pas.CurTokenString;
               end;
-              lName := lName +' (' + lParents + ')';
-            end;
-            //DebugLn({lBlock.gap + }'-> ' + lName + ' ' + IntToStr(level));
-            CheckFile;
-            lBlock.procid := AddProc(lName, Integer(lToken), lNameOfClass, lUnitName, lCurFile.FileName, lCurFile.PackageName, pas.CurRow - 1);
-            if lBlock.procid <> -1 then
-              InsertEnter(pas.CurRow - 1, pas.CurColumn, lBlock.procid);
-            //WriteLn('    +', lName, ' - ', IntToStr(lBlock.procid), ' - ', lCurFile.PackageName, '.', ExtractFileName(lCurFile.Filename));
-          end;
-        end;
-        NewBlock(pas.CurToken, '');
-      end;
-      tkCase: if not Assigned(lBlock)
-      or not (lBlock.token in [tkclass, tkobject, tkrecord]) then begin
-        NewBlock(pas.CurToken, '');
-      end;
-      tkEnd:
-      begin
-        if Assigned(lBlock) then
-          lLastBlockToken := lBlock.token
-        else
-          lLastBlockToken := tkEOF;
-        PopBlock;
-        if Assigned(lBlock)
-        and (lBlock.token in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator])
-        and (lLastBlockToken = tkbegin) then begin
-          if lProfiling then begin
-            { insert lazprofiler.exit }
-            //DebugLn('      ' + lBlock.Name + ' ' + IntToStr(level));
-            if lBlock.procid <> -1 then begin
-              InsertExit(pas.CurRow - 1, pas.CurTokenPos.Column, lBlock.procid); // CurTokenPos needs FPC trunk 37235
-              if lBlock = lStartProc then begin
-                CheckFile;
-                IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: Profiler not stopped in ' + lStartProc.name, lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-                Exit(False);
+            tkAsm:
+              begin
+                if Assigned(lBlock) and not (lBlock.token in
+                  [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) then
+                  NewBlock(pas.CurToken, '');
               end;
-            end;
-          end;
-          PopBlock;
-        end;
-      end;
-      tktry:
-        NewBlock(pas.CurToken, '');
-      tkconstructor,
-      tkdestructor,
-      tkFunction,
-      tkProcedure,
-      tkoperator:
-        DoProc;
-      tkidentifier:
-        if UpperCase(pas.CurTokenString) = 'EXTERNAL' then
-          PopBlock;
-      tkclass,
-      tkobject,
-      tkRecord: begin
-        NewBlock(pas.CurToken, '');
-        while pas.FetchToken in [tkTab, tkWhitespace, tkComment, tkLineEnding] do;
-        if pas.CurToken in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator] then begin
-          { class function/procedure/operator }
-          PopBlock;
-          DoProc;
-        end;
-      end;
-      tkuses: begin
-        case lPart of
-          tkinterface:
-            lIntUsesPos := Point(pas.CurColumn, pas.CurRow - 1);
-          else
-            { tkimplementation or tkUnknown }
-            lImpUsesPos := Point(pas.CurColumn, pas.CurRow - 1);
-        end;
-      end;
-      tkinterface: begin
-        lIntPos := Point(0, pas.CurRow);
-        lPart := tkinterface;
-      end;
-      tkimplementation: begin
-        //debugln('      IMPLEMENTATION');
-        ClearStack;
-        lImpPos := Point(0, pas.CurRow);
-        lPart := tkimplementation;
-      end;
-      tkComment: begin
-        CheckFile;
-        lUpComment := UpperCase(Trim(pas.CurTokenString));
-        if lUpComment = 'START-PROFILER' then begin
-          if not lProfiling then
-            Continue;
-          if Assigned(lStartProc) then begin
-            IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: START-PROFILER: Profiler already started', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-            exit(False);
-          end else begin
-            lTempBlock := lBlock;
-            while Assigned(lTempBlock)
-            and not (lTempBlock.token in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) do
-              lTempBlock := lTempBlock.parent;
-            if Assigned(lTempBlock) then begin
-              if lTempBlock.procid <> -1 then begin
-                //WriteLn('*** LazProfiler: START-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
-                lStartProc := lTempBlock;
-                InsertStart(pas.CurRow - 1, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-                fAutoStart := False;
+            tkBegin:
+              begin
+                if Assigned(lBlock) and (lBlock.token in
+                  [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) then
+                begin
+                  if lProfiling then
+                  begin
+                    { insert: lazprofiler.enter() }
+                    lToken := lBlock.token;
+                    lName := lBlock.Name;
+                    lNameOfClass := lBlock.nameofclass;
+                    lTempBlock := lBlock.parent;
+                    if Assigned(lTempBlock) and (lTempBlock.token in
+                      [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) then
+                    begin
+                      lParents := 'in ' + lTempBlock.Name;
+                      lNameOfClass := lTempBlock.nameofclass;
+                      lTempBlock := lTempBlock.parent;
+                      while Assigned(lTempBlock) do
+                      begin
+                        lParents := lTempBlock.Name + ' in ' + lParents;
+                        lNameOfClass := lTempBlock.nameofclass;
+                        lTempBlock := lTempBlock.parent;
+                      end;
+                      lName := lName + ' (' + lParents + ')';
+                    end;
+                    //DebugLn({lBlock.gap + }'-> ' + lName + ' ' + IntToStr(level));
+                    CheckFile;
+                    lBlock.procid := AddProc(lName, integer(lToken), lNameOfClass,
+                      lUnitName, lCurFile.FileName, lCurFile.PackageName, pas.CurRow - 1);
+                    if lBlock.procid <> -1 then
+                      InsertEnter(pas.CurRow - 1, pas.CurColumn, lBlock.procid);
+                    //WriteLn('    +', lName, ' - ', IntToStr(lBlock.procid), ' - ', lCurFile.PackageName, '.', ExtractFileName(lCurFile.Filename));
+                  end;
+                end;
+                NewBlock(pas.CurToken, '');
               end;
-            end else begin
-              IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: START-PROFILER: not in procedure/function', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-              exit(False);
-            end;
-          end;
-        end else if lUpComment = 'STOP-PROFILER' then begin
-          if not lProfiling then
-            Continue;
-          lTempBlock := lBlock;
-          while Assigned(lTempBlock) and not (lTempBlock.token in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) do lTempBlock := lTempBlock.parent;
-          if Assigned(lTempBlock) then begin
-            if lTempBlock.procid <> -1 then begin
-              if not Assigned(lStartProc) then begin
-                IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: STOP-PROFILER: Profiler not started', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-                exit(False);
-              end else begin
-                if lTempBlock = lStartProc then begin
-                  //WriteLn('*** LazProfiler: STOP-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
-                  InsertStop(pas.CurRow - 1, pas.CurTokenPos.Column);  // CurTokenPos needs FPC trunk 37235
-                  lStartProc := nil;
-                end else begin
-                  IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: STOP-PROFILER: Profiler not started in same procedure/function', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-                  exit(False);
+            tkCase:
+              begin
+                if not Assigned(lBlock) or not (lBlock.token in [tkclass, tkobject, tkrecord]) then
+                begin
+                  NewBlock(pas.CurToken, '');
                 end;
               end;
-            end;
-          end else begin
-            IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: STOP-PROFILER: not in procedure/function', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-            exit(False);
-          end;
-        end else if lUpComment = 'PROFILER-NO' then begin
-          if not lProfiling then begin
-            IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: PROFILER-NO: set twice', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-            exit(False);
-          end;
-          lProfiling := False;
-          lProfilingChangeLevel := level;
-        end else if lUpComment = 'PROFILER-YES' then begin
-          if lProfiling then begin
-            IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: PROFILER-YES: set twice', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-            exit(False);
-          end;
-          if lProfilingChangeLevel <> level then begin
-            IDEMessagesWindow.AddCustomMessage(mluFatal, 'LazProfiler: PROFILER-YES: not set on same level as PROFILER-NO', lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
-            exit(False);
-          end;
-          lProfiling := True
+            tkEnd:
+              begin
+                if Assigned(lBlock) then
+                  lLastBlockToken := lBlock.token
+                else
+                  lLastBlockToken := tkEOF;
+                PopBlock;
+                if Assigned(lBlock) and (lBlock.token in
+                  [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) and
+                  (lLastBlockToken = tkbegin) then
+                begin
+                  if lProfiling then
+                  begin
+                    { insert lazprofiler.exit }
+                    //DebugLn('      ' + lBlock.Name + ' ' + IntToStr(level));
+                    if lBlock.procid <> -1 then
+                    begin
+                      InsertExit(pas.CurRow - 1, pas.CurTokenPos.Column, lBlock.procid);
+                      // CurTokenPos needs FPC trunk 37235
+                      if lBlock = lStartProc then
+                      begin
+                        CheckFile;
+                        IDEMessagesWindow.AddCustomMessage(mluFatal,
+                          'LazProfiler: Profiler not stopped in ' + lStartProc.Name, lCurFile.FileName,
+                          pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
+                        Exit(False);
+                      end;
+                    end;
+                  end;
+                  PopBlock;
+                end;
+              end;
+            tktry:
+              begin
+                NewBlock(pas.CurToken, '');
+              end;
+            tkconstructor, tkdestructor, tkFunction, tkProcedure, tkoperator:
+              DoProc;
+            tkidentifier:
+              begin
+                if UpperCase(pas.CurTokenString) = 'EXTERNAL' then
+                  PopBlock;
+              end;
+            tkclass, tkobject, tkRecord:
+              begin
+                NewBlock(pas.CurToken, '');
+                while pas.FetchToken in [tkTab, tkWhitespace, tkComment, tkLineEnding] do ;
+                if pas.CurToken in [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator] then
+                begin
+                  { class function/procedure/operator }
+                  PopBlock;
+                  DoProc;
+                end;
+              end;
+            tkuses:
+              begin
+                case lPart of
+                  tkinterface:
+                    lIntUsesPos := Point(pas.CurColumn, pas.CurRow - 1);
+                  else
+                    { tkimplementation or tkUnknown }
+                    lImpUsesPos := Point(pas.CurColumn, pas.CurRow - 1);
+                end;
+              end;
+            tkinterface:
+              begin
+                lIntPos := Point(0, pas.CurRow);
+                lPart := tkinterface;
+              end;
+            tkimplementation:
+              begin
+                ClearStack;
+                lImpPos := Point(0, pas.CurRow);
+                lPart := tkimplementation;
+              end;
+            tkComment:
+              begin
+                CheckFile;
+                lUpComment := UpperCase(Trim(pas.CurTokenString));
+                if lUpComment = 'START-PROFILER' then
+                begin
+                  if not lProfiling then
+                    Continue;
+                  if Assigned(lStartProc) then
+                  begin
+                    IDEMessagesWindow.AddCustomMessage(mluFatal,
+                      'LazProfiler: START-PROFILER: Profiler already started', lCurFile.FileName,
+                      pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
+                    exit(False);
+                  end
+                  else
+                  begin
+                    lTempBlock := lBlock;
+                    while Assigned(lTempBlock) and not
+                      (lTempBlock.token in [tkprocedure, tkfunction, tkconstructor,
+                        tkdestructor, tkoperator]) do
+                      lTempBlock := lTempBlock.parent;
+                    if Assigned(lTempBlock) then
+                    begin
+                      if lTempBlock.procid <> -1 then
+                      begin
+                        //WriteLn('*** LazProfiler: START-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
+                        lStartProc := lTempBlock;
+                        InsertStart(pas.CurRow - 1, pas.CurTokenPos.Column);
+                        // CurTokenPos needs FPC trunk 37235
+                        fAutoStart := False;
+                      end;
+                    end
+                    else
+                    begin
+                      IDEMessagesWindow.AddCustomMessage(mluFatal,
+                        'LazProfiler: START-PROFILER: not in procedure/function', lCurFile.FileName,
+                        pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
+                      exit(False);
+                    end;
+                  end;
+                end
+                else if lUpComment = 'STOP-PROFILER' then
+                begin
+                  if not lProfiling then
+                    Continue;
+                  lTempBlock := lBlock;
+                  while Assigned(lTempBlock) and not (lTempBlock.token in
+                      [tkprocedure, tkfunction, tkconstructor, tkdestructor, tkoperator]) do
+                    lTempBlock := lTempBlock.parent;
+                  if Assigned(lTempBlock) then
+                  begin
+                    if lTempBlock.procid <> -1 then
+                    begin
+                      if not Assigned(lStartProc) then
+                      begin
+                        IDEMessagesWindow.AddCustomMessage(mluFatal,
+                          'LazProfiler: STOP-PROFILER: Profiler not started', lCurFile.FileName,
+                          pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
+                        exit(False);
+                      end
+                      else
+                      begin
+                        if lTempBlock = lStartProc then
+                        begin
+                          //WriteLn('*** LazProfiler: STOP-PROFILER: ', lCurFile.Filename, ' - ', IntToStr(pas.CurRow));
+                          InsertStop(pas.CurRow - 1, pas.CurTokenPos.Column);
+                          // CurTokenPos needs FPC trunk 37235
+                          lStartProc := nil;
+                        end
+                        else
+                        begin
+                          IDEMessagesWindow.AddCustomMessage(mluFatal,
+                            'LazProfiler: STOP-PROFILER: Profiler not started in same procedure/function',
+                            lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column);
+                          // CurTokenPos needs FPC trunk 37235
+                          exit(False);
+                        end;
+                      end;
+                    end;
+                  end
+                  else
+                  begin
+                    IDEMessagesWindow.AddCustomMessage(mluFatal,
+                      'LazProfiler: STOP-PROFILER: not in procedure/function', lCurFile.FileName,
+                      pas.CurRow, pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
+                    exit(False);
+                  end;
+                end
+                else if lUpComment = 'PROFILER-NO' then
+                begin
+                  if not lProfiling then
+                  begin
+                    IDEMessagesWindow.AddCustomMessage(mluFatal,
+                      'LazProfiler: PROFILER-NO: set twice', lCurFile.FileName, pas.CurRow,
+                      pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
+                    exit(False);
+                  end;
+                  lProfiling := False;
+                  lProfilingChangeLevel := level;
+                end
+                else if lUpComment = 'PROFILER-YES' then
+                begin
+                  if lProfiling then
+                  begin
+                    IDEMessagesWindow.AddCustomMessage(mluFatal,
+                      'LazProfiler: PROFILER-YES: set twice', lCurFile.FileName, pas.CurRow,
+                      pas.CurTokenPos.Column); // CurTokenPos needs FPC trunk 37235
+                    exit(False);
+                  end;
+                  if lProfilingChangeLevel <> level then
+                  begin
+                    IDEMessagesWindow.AddCustomMessage(mluFatal,
+                      'LazProfiler: PROFILER-YES: not set on same level as PROFILER-NO',
+                      lCurFile.FileName, pas.CurRow, pas.CurTokenPos.Column);
+                    // CurTokenPos needs FPC trunk 37235
+                    exit(False);
+                  end;
+                  lProfiling := True;
+                end;
+              end;
+            tkEOF:
+              begin
+                break;
+              end;
+          end; // case
+        except
+          on E: Exception do;
+//            ShowMessage('Error Fetch Token');
         end;
       end;
-      tkEOF:
-        break;
-    end;
 
-    if pInstrument
-    and pFile.Changed then begin
+    if pInstrument and pFile.Changed then
+    begin
       { insert uses }
-      if UpperCase(ExtractFileExt(pFile.FileName)) <> '.INC' then begin
+      if UpperCase(ExtractFileExt(pFile.FileName)) <> '.INC' then
+      begin
         if lImpUsesPos <> Point(-1, -1) then
           InsertUnit(lImpUsesPos.y, lImpUsesPos.x)
         else if lIntUsesPos <> Point(-1, -1) then
@@ -1395,24 +1584,32 @@ begin
     fr.Free;
   end;
 
-  if pInstrument
-  and pfile.Changed
-  and not pFile.Save then
+  if pInstrument and pfile.Changed and not pFile.Save then
     Exit(False);
+
+  except
+    on E: Exception do
+      ShowMessage(E.Message);
+  end;
+  //ShowMessage('ParseSource10');
 end;
 
 procedure TProfilerAddon.RestoreModifiedSettings;
 var
-  i: Integer;
+  i: integer;
   lPasPkg: TLPPasPackage;
   lFiles: TStringList;
   lPkg: TIDEProjPackBase;
 begin
-  for i := 0 to fPackageList.Count -1 do begin
+  for i := 0 to fPackageList.Count - 1 do
+  begin
     lPasPkg := fPackageList[i];
-    if lPasPkg.PackageIsProject then begin
+    if lPasPkg.PackageIsProject then
+    begin
       lPkg := fProject;
-    end else begin
+    end
+    else
+    begin
       lPkg := PackageEditingInterface.FindPackageWithName(fPackageList[i].PackageName);
     end;
     lFiles := TStringList.Create;
@@ -1420,7 +1617,8 @@ begin
       lFiles.Delimiter := ';';
       lFiles.StrictDelimiter := True;
       lFiles.DelimitedText := lPkg.LazCompilerOptions.OtherUnitFiles;
-      if lFiles.Count > 1 then begin
+      if lFiles.Count > 1 then
+      begin
         if lFiles[0] = fLazProfilerPath then
           lFiles.Delete(0);
         if lFiles[0] = fEpikTimerPath then
@@ -1434,18 +1632,18 @@ begin
       lPkg.LazCompilerOptions.UnitOutputDirectory := lPasPkg.UnitOutputDirectory;
   end;
   // hint: save will only happen if ToolStatus is itNone or itDebugger: needs trunc 60719
-  if not (LazarusIDE.ToolStatus in [itNone, itDebugger]) then
-    WriteLn('*** LazProfiler: RestoreModifiedSettings: Saving project and packages will not work. Use at least Lazarus trunk r60719.');
+  //  if not (LazarusIDE.ToolStatus in [itNone, itDebugger]) then
+  //    WriteLn('*** LazProfiler: RestoreModifiedSettings: Saving project and packages will not work. Use at least Lazarus trunk r60719.');
   LazarusIDE.DoSaveProject([]);
   PackageEditingInterface.DoSaveAllPackages([]);
 end;
 
 procedure TProfilerAddon.RestoreSources;
 var
-  i: Integer;
+  i: integer;
   lPkg: TIDEPackage;
 
-  procedure DeleteRT(pDir: String);
+  procedure DeleteRT(pDir: string);
   begin
     DeleteFile(pDir + cRunTimeFileName);
     DeleteFile(pDir + cCoreFileName);
@@ -1453,8 +1651,7 @@ var
   end;
 
 begin
-  WriteLn('*** LazProfiler: RestoreSources');
-
+  // WriteLn('*** LazProfiler: RestoreSources');
   BuildFileList(cBackupExtension, False);
 
   //fFileList.Sort;
@@ -1468,11 +1665,13 @@ end;
 
 procedure TProfilerAddon.RestoreSource(pFile: TLPFile);
 var
-  lOrigFileName: String;
+  lOrigFileName: string;
 begin
   //DebugLn('  ' + pFile.FileName);
-  lOrigFileName := LeftStr(pFile.Filename, length(pFile.Filename) - length(cBackupExtension));
-  if FileExists(pFile.Filename) then begin
+  lOrigFileName := LeftStr(pFile.Filename, length(pFile.Filename) -
+    length(cBackupExtension));
+  if FileExists(pFile.Filename) then
+  begin
     DeleteFile(lOrigFileName);
     RenameFile(pFile.Filename, lOrigFileName);
     //todo: touch file here to force rebuild
@@ -1482,8 +1681,9 @@ end;
 function TProfilerAddon.ProjectRunWithoutDebugBuilding(Sender: TObject;
   var Handled: boolean): TModalResult;
 begin
-  Result := mrOK;
-  if fProfiling then begin
+  Result := mrOk;
+  if fProfiling then
+  begin
     ModifySettings;
     // disable CheckFilesOnDisk
     LazarusIDE.CheckFilesOnDiskEnabled := False; { needs trunk 56204 }
@@ -1492,16 +1692,18 @@ begin
   end;
 end;
 
-procedure TProfilerAddon.ProjectBuildingFinished(Sender: TObject; BuildSuccessful: Boolean);
+procedure TProfilerAddon.ProjectBuildingFinished(Sender: TObject;
+  BuildSuccessful: boolean);
 begin
-  if not fSourcesInstrumented then begin
-    if (LazarusIDE.ActiveProject <> nil)
-    and (pfAlwaysBuild in LazarusIDE.ActiveProject.Flags) then
+  if not fSourcesInstrumented then
+  begin
+    if (LazarusIDE.ActiveProject <> nil) and (pfAlwaysBuild in
+      LazarusIDE.ActiveProject.Flags) then
       LazarusIDE.ActiveProject.Flags := LazarusIDE.ActiveProject.Flags - [pfAlwaysBuild];
   end;
-  if fProfiling then begin
-    if BuildSuccessful
-    and cAutoRestore then
+  if fProfiling then
+  begin
+    if BuildSuccessful and cAutoRestore then
       RestoreSources;
     // enable CheckFilesOnDisk
     LazarusIDE.CheckFilesOnDiskEnabled := True; { needs trunk 56204 }
@@ -1513,7 +1715,8 @@ procedure TProfilerAddon.RunFinished(Sender: TObject);
 begin
   //WriteLn('*** LazProfiler: RunFinished');
   LoadResult;
-  if fProfiling then begin
+  if fProfiling then
+  begin
     // enable CheckFilesOnDisk
     LazarusIDE.CheckFilesOnDiskEnabled := True; { needs trunk 56204 }
     // force rebuild on next run/compile
@@ -1524,16 +1727,19 @@ begin
     if Assigned(ProfilerWindow) then
       ProfilerWindow.PageControl.ActivePageIndex := 0;
     fProfiling := False;
-  end else begin
+  end
+  else
+  begin
     fProcList.Init;
   end;
 end;
 
-function TProfilerAddon.ProjectOpened(Sender: TObject; pProject: TLazProject): TModalResult;
+function TProfilerAddon.ProjectOpened(Sender: TObject;
+  pProject: TLazProject): TModalResult;
 var
-  lTargetFileName: String;
+  lTargetFileName: string;
 begin
-  Result := mrOK;
+  Result := mrOk;
   //WriteLn('*** LazProfiler: ProjectOpened: '+pProject.ProjectInfoFile);
   fProject := pProject;
   fProcList.Clear;
@@ -1555,14 +1761,13 @@ begin
   pProject.Modified := False;
 end;
 
-function TProfilerAddon.ProjectClose(Sender: TObject; AProject: TLazProject): TModalResult;
+function TProfilerAddon.ProjectClose(Sender: TObject;
+  AProject: TLazProject): TModalResult;
 begin
-  Result := mrOK;
-  if FileExists(fTargetDir + fTargetName + cSettingExtension)
-  or (
-    Assigned(ProfilerWindow)
-    and ProfilerWindow.DataChanged
-  ) then begin
+  Result := mrOk;
+  if FileExists(fTargetDir + fTargetName + cSettingExtension) or
+    (Assigned(ProfilerWindow) and ProfilerWindow.DataChanged) then
+  begin
     //WriteLn('*** LazProfiler: ProjectClose');
     fNeedsRebuild := pfAlwaysBuild in AProject.Flags;
     SaveXML(fTargetDir + fTargetName + cSettingExtension);
@@ -1576,21 +1781,23 @@ end;
 function TProfilerAddon.SaveEditorFile(Sender: TObject; aFile: TLazProjectFile;
   SaveStep: TSaveEditorFileStep; TargetFilename: string): TModalResult;
 var
-  i: Integer;
+  i: integer;
   lFile: TLPFile;
 begin
-  Result := mrOK;
-  if fSourcesInstrumented
-  and (SaveStep = sefsAfterWrite) then begin
+  Result := mrOk;
+  if fSourcesInstrumented and (SaveStep = sefsAfterWrite) then
+  begin
     // prior r60687 ide checks if file on disk has been modified an writes it to disk
     // which destroys the instrumented source, so write it again
     TargetFilename := UpperCase(TargetFilename);
-    for i := 0 to fFileList.Count - 1 do begin
+    for i := 0 to fFileList.Count - 1 do
+    begin
       lFile := fFileList[i];
       if lFile.FilenameUp = TargetFilename then
         lFile.Save;
     end;
-    for i := 0 to fIncludeList.Count - 1 do begin
+    for i := 0 to fIncludeList.Count - 1 do
+    begin
       lFile := fIncludeList[i];
       if lFile.FilenameUp = TargetFilename then
         lFile.Save;
@@ -1607,7 +1814,8 @@ begin
   fOldClassList := TLPPasClassList.Create(True);
   fIncludeList := TLPFileList.Create(True);
   fOldProcList := TLPPasProcList.Create(True);
-  fUnitOutputDirectory := SysUtils.GetTempDir(False) + 'LazProfiler' + PathDelim + '$(TargetCPU)-$(TargetOS)';
+  fUnitOutputDirectory := SysUtils.GetTempDir(False) + 'LazProfiler' +
+    PathDelim + '$(TargetCPU)-$(TargetOS)';
 end;
 
 destructor TProfilerAddon.Destroy;
@@ -1621,16 +1829,19 @@ begin
   inherited Destroy;
 end;
 
-procedure TProfilerAddon.CreateProfilerWindow(Sender: TObject; pFormName: string; var pForm: TCustomForm; DoDisableAutoSizing: boolean);
+procedure TProfilerAddon.CreateProfilerWindow(Sender: TObject;
+  pFormName: string; var pForm: TCustomForm; DoDisableAutoSizing: boolean);
 begin
-  if CompareText(pFormName, cProfilerFormName)<>0 then exit;
-  IDEWindowCreators.CreateForm(ProfilerWindow, TLazProfilerForm, DoDisableAutosizing, LazarusIDE.OwningComponent);
-  pForm:=ProfilerWindow;
+  if CompareText(pFormName, cProfilerFormName) <> 0 then exit;
+  IDEWindowCreators.CreateForm(ProfilerWindow, TLazProfilerForm,
+    DoDisableAutosizing, LazarusIDE.OwningComponent);
+  pForm := ProfilerWindow;
 end;
 
 procedure TProfilerAddon.UpdateUI;
 begin
-  if not Assigned(ProfilerWindow) then begin
+  if not Assigned(ProfilerWindow) then
+  begin
     IDEWindowCreators.CreateForm(ProfilerWindow, TLazProfilerForm, False, Application);
     if Assigned(IDEDockMaster) then
       IDEDockMaster.MakeIDEWindowDockable(ProfilerWindow);
@@ -1638,17 +1849,20 @@ begin
   ProfilerWindow.VST.Header.SortColumn := SortColumn;
   ProfilerWindow.VST.Header.SortDirection := TSortDirection(SortDirection);
   RunCmd.Enabled := fActive;
-  if fActive then begin
+  if fActive then
+  begin
     ProfilerWindow.Data := fProcList;
-  end else begin
-    ProfilerWindow.Data := Nil;
+  end
+  else
+  begin
+    ProfilerWindow.Data := nil;
   end;
   ProfilerWindow.CBActive.Checked := fActive;
 end;
 
 procedure TProfilerAddon.Start(Sender: TObject);
 var
-  lTargetFileName: String;
+  lTargetFileName: string;
   lProject: TLazProject;
   lPKg: TIDEPackage;
 begin
@@ -1683,14 +1897,15 @@ begin
 
   RestoreSources;
 
-  if LazarusIDE.DoBuildProject(crRun, [pbfSkipLinking]) <> mrOK then
+  if LazarusIDE.DoBuildProject(crRun, [pbfSkipLinking]) <> mrOk then
     Exit;
 
   if (IDEMessagesWindow <> nil) then
     IDEMessagesWindow.Clear;
 
   fProfiling := True;
-  if LazarusIDE.DoRunProjectWithoutDebug<>mrOK then begin
+  if LazarusIDE.DoRunProjectWithoutDebug <> mrOk then
+  begin
     { error while compiling profiled project }
     fProfiling := False;
     LazarusIDE.CheckFilesOnDiskEnabled := True; { needs trunk 56204 }
@@ -1701,19 +1916,21 @@ end;
 procedure TProfilerAddon.ShowProfilerWindow(Sender: TObject);
 begin
   IDEWindowCreators.ShowForm(cProfilerFormName, True);
-  if Assigned(ProfilerWindow) then with ProfilerWindow do begin
-    if fActive then
-      PageControl.ActivePageIndex := 0
-    else begin
-      PageControl.ActivePageIndex := 1;
-      CBActive.SetFocus;
+  if Assigned(ProfilerWindow) then with ProfilerWindow do
+    begin
+      if fActive then
+        PageControl.ActivePageIndex := 0
+      else
+      begin
+        PageControl.ActivePageIndex := 1;
+        CBActive.SetFocus;
+      end;
     end;
-  end;
 end;
 
 procedure TProfilerAddon.CleanUp(Sender: TObject);
 var
-  lTargetFileName: String;
+  lTargetFileName: string;
   lProject: TLazProject;
 begin
   //DebugLn('LazProfiler: cleanup');
