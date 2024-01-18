@@ -82,21 +82,21 @@ type
   { TLPProcClassComparer }
 
   TLPProcClassComparer = class(specialize TComparer<TLPPasProc>)
-    function Compare(const Left, Right: TLPPasProc): Integer; override; overload;
+    function Compare({$IF FPC_FULLVERSION < 30300} constref {$ELSE} const {$ENDIF} Left, Right: TLPPasProc): Integer; override; overload;
   end;
 
 
   { TLPProcUnitComparer }
 
   TLPProcUnitComparer = class(specialize TComparer<TLPPasProc>)
-    function Compare(const Left, Right: TLPPasProc): Integer; override; overload;
+    function Compare({$IF FPC_FULLVERSION < 30300} constref {$ELSE} const {$ENDIF} Left, Right: TLPPasProc): Integer; override; overload;
   end;
 
 
   { TLPProcPackageComparer }
 
   TLPProcPackageComparer = class(specialize TComparer<TLPPasProc>)
-    function Compare(const Left, Right: TLPPasProc): Integer; override; overload;
+    function Compare({$IF FPC_FULLVERSION < 30300} constref {$ELSE} const {$ENDIF} Left, Right: TLPPasProc): Integer; override; overload;
   end;
 
 implementation
@@ -116,7 +116,7 @@ var
 
 { TLPProcPackageComparer }
 
-function TLPProcPackageComparer.Compare(const Left, Right: TLPPasProc): Integer;
+function TLPProcPackageComparer.Compare({$IF FPC_FULLVERSION < 30300} constref {$ELSE} const {$ENDIF}  Left, Right: TLPPasProc): Integer;
 begin
   if Left.PackageIsProject
   and not Right.PackageIsProject then
@@ -133,7 +133,7 @@ end;
 
 { TLPProcUnitComparer }
 
-function TLPProcUnitComparer.Compare(const Left, Right: TLPPasProc): Integer;
+function TLPProcUnitComparer.Compare({$IF FPC_FULLVERSION < 30300} constref {$ELSE} const {$ENDIF}  Left, Right: TLPPasProc): Integer;
 begin
   Result := strcomp(PChar(Left.UnitNameUp), PChar(Right.UnitNameUp));
   if Result = 0 then Result := strcomp(PChar(Left.NameOfClassUp), PChar(Right.NameOfClassUp));
@@ -143,7 +143,7 @@ end;
 
 { TLPProcClassComparer }
 
-function TLPProcClassComparer.Compare(const Left, Right: TLPPasProc): Integer;
+function TLPProcClassComparer.Compare({$IF FPC_FULLVERSION < 30300} constref {$ELSE} const {$ENDIF}  Left, Right: TLPPasProc): Integer;
 begin
   Result := strcomp(PChar(Left.NameOfClassUp), PChar(Right.NameOfClassUp));
   if Result = 0 then Result := strcomp(PChar(Left.NameUp), PChar(Right.NameUp));
